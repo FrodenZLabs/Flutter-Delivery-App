@@ -4,8 +4,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i6;
-import 'dart:convert' as _i26;
-import 'dart:typed_data' as _i27;
+import 'dart:convert' as _i30;
+import 'dart:typed_data' as _i31;
 
 import 'package:flutter_delivery_app/data/data_sources/local/delivery_info_local_data_source.dart'
     as _i18;
@@ -17,6 +17,8 @@ import 'package:flutter_delivery_app/data/data_sources/local/user_local_data_sou
     as _i15;
 import 'package:flutter_delivery_app/data/data_sources/remote/delivery_info_remote_data_source.dart'
     as _i20;
+import 'package:flutter_delivery_app/data/data_sources/remote/driver_remote_data_source.dart'
+    as _i28;
 import 'package:flutter_delivery_app/data/data_sources/remote/schedule_remote_data_source.dart'
     as _i25;
 import 'package:flutter_delivery_app/data/data_sources/remote/service_remote_data_source.dart'
@@ -25,6 +27,8 @@ import 'package:flutter_delivery_app/data/data_sources/remote/user_remote_data_s
     as _i14;
 import 'package:flutter_delivery_app/data/models/delivery/delivery_info_model.dart'
     as _i19;
+import 'package:flutter_delivery_app/data/models/driver/driver_model.dart'
+    as _i29;
 import 'package:flutter_delivery_app/data/models/schedule/schedule_model.dart'
     as _i24;
 import 'package:flutter_delivery_app/data/models/service/service_model.dart'
@@ -32,6 +36,8 @@ import 'package:flutter_delivery_app/data/models/service/service_model.dart'
 import 'package:flutter_delivery_app/data/models/user/user_model.dart' as _i3;
 import 'package:flutter_delivery_app/domain/entities/delivery/delivery_info.dart'
     as _i17;
+import 'package:flutter_delivery_app/domain/entities/driver/driver.dart'
+    as _i27;
 import 'package:flutter_delivery_app/domain/entities/schedule/schedule.dart'
     as _i22;
 import 'package:flutter_delivery_app/domain/entities/service/service.dart'
@@ -39,6 +45,8 @@ import 'package:flutter_delivery_app/domain/entities/service/service.dart'
 import 'package:flutter_delivery_app/domain/entities/user/user.dart' as _i2;
 import 'package:flutter_delivery_app/domain/repositories/delivery/delivery_info_repository.dart'
     as _i16;
+import 'package:flutter_delivery_app/domain/repositories/driver/driver_repository.dart'
+    as _i26;
 import 'package:flutter_delivery_app/domain/repositories/schedule/schedule_repository.dart'
     as _i21;
 import 'package:flutter_delivery_app/domain/repositories/service/service_repository.dart'
@@ -994,6 +1002,17 @@ class MockScheduleLocalDataSource extends _i1.Mock
         returnValue:
             _i6.Future<List<_i24.ScheduleModel>>.value(<_i24.ScheduleModel>[]),
       ) as _i6.Future<List<_i24.ScheduleModel>>);
+
+  @override
+  _i6.Future<void> syncAllSchedules(List<_i24.ScheduleModel>? schedules) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #syncAllSchedules,
+          [schedules],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 }
 
 /// A class which mocks [ScheduleRemoteDataSource].
@@ -1059,6 +1078,66 @@ class MockScheduleRemoteDataSource extends _i1.Mock
       ) as _i6.Future<List<_i24.ScheduleModel>>);
 }
 
+/// A class which mocks [DriverRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDriverRepository extends _i1.Mock implements _i26.DriverRepository {
+  MockDriverRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<List<_i27.Driver>> getDriversByServiceId(String? serviceId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getDriversByServiceId,
+          [serviceId],
+        ),
+        returnValue: _i6.Future<List<_i27.Driver>>.value(<_i27.Driver>[]),
+      ) as _i6.Future<List<_i27.Driver>>);
+
+  @override
+  _i6.Future<_i27.Driver?> getDriverById(String? driverId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getDriverById,
+          [driverId],
+        ),
+        returnValue: _i6.Future<_i27.Driver?>.value(),
+      ) as _i6.Future<_i27.Driver?>);
+}
+
+/// A class which mocks [DriverRemoteDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDriverRemoteDataSource extends _i1.Mock
+    implements _i28.DriverRemoteDataSource {
+  MockDriverRemoteDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<List<_i29.DriverModel>> getDriversByServiceId(String? serviceId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getDriversByServiceId,
+          [serviceId],
+        ),
+        returnValue:
+            _i6.Future<List<_i29.DriverModel>>.value(<_i29.DriverModel>[]),
+      ) as _i6.Future<List<_i29.DriverModel>>);
+
+  @override
+  _i6.Future<_i29.DriverModel?> getDriverById(String? driverId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getDriverById,
+          [driverId],
+        ),
+        returnValue: _i6.Future<_i29.DriverModel?>.value(),
+      ) as _i6.Future<_i29.DriverModel?>);
+}
+
 /// A class which mocks [Client].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -1114,7 +1193,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i26.Encoding? encoding,
+    _i30.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1145,7 +1224,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i26.Encoding? encoding,
+    _i30.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1176,7 +1255,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i26.Encoding? encoding,
+    _i30.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1207,7 +1286,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i26.Encoding? encoding,
+    _i30.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1255,7 +1334,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
       ) as _i6.Future<String>);
 
   @override
-  _i6.Future<_i27.Uint8List> readBytes(
+  _i6.Future<_i31.Uint8List> readBytes(
     Uri? url, {
     Map<String, String>? headers,
   }) =>
@@ -1265,8 +1344,8 @@ class MockClient extends _i1.Mock implements _i4.Client {
           [url],
           {#headers: headers},
         ),
-        returnValue: _i6.Future<_i27.Uint8List>.value(_i27.Uint8List(0)),
-      ) as _i6.Future<_i27.Uint8List>);
+        returnValue: _i6.Future<_i31.Uint8List>.value(_i31.Uint8List(0)),
+      ) as _i6.Future<_i31.Uint8List>);
 
   @override
   _i6.Future<_i4.StreamedResponse> send(_i4.BaseRequest? request) =>

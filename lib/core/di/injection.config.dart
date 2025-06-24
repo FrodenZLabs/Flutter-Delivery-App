@@ -19,6 +19,8 @@ import 'package:flutter_delivery_app/data/data_sources/local/user_local_data_sou
     as _i943;
 import 'package:flutter_delivery_app/data/data_sources/remote/delivery_info_remote_data_source.dart'
     as _i596;
+import 'package:flutter_delivery_app/data/data_sources/remote/driver_remote_data_source.dart'
+    as _i147;
 import 'package:flutter_delivery_app/data/data_sources/remote/schedule_remote_data_source.dart'
     as _i1035;
 import 'package:flutter_delivery_app/data/data_sources/remote/service_remote_data_source.dart'
@@ -30,6 +32,8 @@ import 'package:flutter_delivery_app/data/models/service/service_model.dart'
 import 'package:flutter_delivery_app/data/models/user/user_model.dart' as _i866;
 import 'package:flutter_delivery_app/data/repositories_impl/delivery_info_repository_impl.dart'
     as _i74;
+import 'package:flutter_delivery_app/data/repositories_impl/driver_repository_impl.dart'
+    as _i256;
 import 'package:flutter_delivery_app/data/repositories_impl/schedule_repository_impl.dart'
     as _i498;
 import 'package:flutter_delivery_app/data/repositories_impl/service_repository_impl.dart'
@@ -38,6 +42,8 @@ import 'package:flutter_delivery_app/data/repositories_impl/user_repository_impl
     as _i1026;
 import 'package:flutter_delivery_app/domain/repositories/delivery/delivery_info_repository.dart'
     as _i993;
+import 'package:flutter_delivery_app/domain/repositories/driver/driver_repository.dart'
+    as _i16;
 import 'package:flutter_delivery_app/domain/repositories/schedule/schedule_repository.dart'
     as _i24;
 import 'package:flutter_delivery_app/domain/repositories/service/service_repository.dart'
@@ -56,6 +62,10 @@ import 'package:flutter_delivery_app/domain/usecases/delivery/set_default_delive
     as _i289;
 import 'package:flutter_delivery_app/domain/usecases/delivery/update_delivery_info.dart'
     as _i537;
+import 'package:flutter_delivery_app/domain/usecases/driver/get_driver_by_id.dart'
+    as _i436;
+import 'package:flutter_delivery_app/domain/usecases/driver/get_drivers_by_service_id.dart'
+    as _i714;
 import 'package:flutter_delivery_app/domain/usecases/schedule/book_schedule.dart'
     as _i175;
 import 'package:flutter_delivery_app/domain/usecases/schedule/cancel_schedule.dart'
@@ -82,6 +92,8 @@ import 'package:flutter_delivery_app/domain/usecases/user/update_user.dart'
     as _i804;
 import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_bloc.dart'
     as _i606;
+import 'package:flutter_delivery_app/presentation/blocs/driver/driver_bloc.dart'
+    as _i289;
 import 'package:flutter_delivery_app/presentation/blocs/schedule/schedule_bloc.dart'
     as _i500;
 import 'package:flutter_delivery_app/presentation/blocs/service/service_bloc.dart'
@@ -114,11 +126,6 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i191.HiveDeliveryInfoLocalDataSource());
     gh.lazySingleton<_i1064.ServiceLocalDataSource>(() =>
         _i1064.HiveServiceLocalDataSource(gh<_i979.Box<_i506.ServiceModel>>()));
-    gh.lazySingleton<_i1035.ScheduleRemoteDataSource>(
-        () => _i1035.HttpScheduleRemoteDataSource(
-              gh<_i519.Client>(),
-              gh<_i367.ScheduleLocalDataSource>(),
-            ));
     gh.lazySingleton<_i367.ScheduleLocalDataSource>(
         () => _i367.HiveScheduleLocalDataSource());
     gh.lazySingleton<_i943.UserLocalDataSource>(() =>
@@ -131,6 +138,13 @@ extension GetItInjectableX on _i174.GetIt {
             ));
     gh.lazySingleton<_i1038.UserRemoteDataSource>(
         () => _i1038.HttpUserRemoteDataSource(gh<_i519.Client>()));
+    gh.lazySingleton<_i147.DriverRemoteDataSource>(
+        () => _i147.HttpDriverRemoteDataSource(gh<_i519.Client>()));
+    gh.lazySingleton<_i1035.ScheduleRemoteDataSource>(
+        () => _i1035.HttpScheduleRemoteDataSource(
+              gh<_i519.Client>(),
+              gh<_i367.ScheduleLocalDataSource>(),
+            ));
     gh.lazySingleton<_i1047.ServiceRemoteDataSource>(
         () => _i1047.HttpServiceRemoteDataSource(gh<_i519.Client>()));
     gh.lazySingleton<_i24.ScheduleRepository>(
@@ -159,6 +173,8 @@ extension GetItInjectableX on _i174.GetIt {
           getScheduleById: gh<_i859.GetScheduleById>(),
           getSchedulesByUser: gh<_i875.GetSchedulesByUser>(),
         ));
+    gh.lazySingleton<_i16.DriverRepository>(
+        () => _i256.DriverRepositoryImpl(gh<_i147.DriverRemoteDataSource>()));
     gh.lazySingleton<_i993.DeliveryInfoRepository>(
         () => _i74.DeliveryInfoRepositoryImpl(
               gh<_i596.DeliveryInfoRemoteDataSource>(),
@@ -168,6 +184,12 @@ extension GetItInjectableX on _i174.GetIt {
           remoteDataSource: gh<_i1047.ServiceRemoteDataSource>(),
           localDataSource: gh<_i1064.ServiceLocalDataSource>(),
         ));
+    gh.lazySingleton<_i714.GetDriversByServiceId>(
+        () => _i714.GetDriversByServiceId(gh<_i16.DriverRepository>()));
+    gh.lazySingleton<_i436.GetDriverById>(
+        () => _i436.GetDriverById(gh<_i16.DriverRepository>()));
+    gh.factory<_i289.DriverBloc>(
+        () => _i289.DriverBloc(gh<_i16.DriverRepository>()));
     gh.lazySingleton<_i281.AddDeliveryInfo>(
         () => _i281.AddDeliveryInfo(gh<_i993.DeliveryInfoRepository>()));
     gh.lazySingleton<_i233.DeleteDeliveryInfo>(
