@@ -21,6 +21,8 @@ import 'package:flutter_delivery_app/data/data_sources/remote/delivery_info_remo
     as _i596;
 import 'package:flutter_delivery_app/data/data_sources/remote/driver_remote_data_source.dart'
     as _i147;
+import 'package:flutter_delivery_app/data/data_sources/remote/rating_remote_data_source.dart'
+    as _i407;
 import 'package:flutter_delivery_app/data/data_sources/remote/schedule_remote_data_source.dart'
     as _i1035;
 import 'package:flutter_delivery_app/data/data_sources/remote/service_remote_data_source.dart'
@@ -34,6 +36,8 @@ import 'package:flutter_delivery_app/data/repositories_impl/delivery_info_reposi
     as _i74;
 import 'package:flutter_delivery_app/data/repositories_impl/driver_repository_impl.dart'
     as _i256;
+import 'package:flutter_delivery_app/data/repositories_impl/rating_repository_impl.dart'
+    as _i653;
 import 'package:flutter_delivery_app/data/repositories_impl/schedule_repository_impl.dart'
     as _i498;
 import 'package:flutter_delivery_app/data/repositories_impl/service_repository_impl.dart'
@@ -44,6 +48,8 @@ import 'package:flutter_delivery_app/domain/repositories/delivery/delivery_info_
     as _i993;
 import 'package:flutter_delivery_app/domain/repositories/driver/driver_repository.dart'
     as _i16;
+import 'package:flutter_delivery_app/domain/repositories/rating/rating_repository.dart'
+    as _i56;
 import 'package:flutter_delivery_app/domain/repositories/schedule/schedule_repository.dart'
     as _i24;
 import 'package:flutter_delivery_app/domain/repositories/service/service_repository.dart'
@@ -66,6 +72,10 @@ import 'package:flutter_delivery_app/domain/usecases/driver/get_driver_by_id.dar
     as _i436;
 import 'package:flutter_delivery_app/domain/usecases/driver/get_drivers_by_service_id.dart'
     as _i714;
+import 'package:flutter_delivery_app/domain/usecases/rating/add_rating.dart'
+    as _i345;
+import 'package:flutter_delivery_app/domain/usecases/rating/get_rating_by_user_id.dart'
+    as _i207;
 import 'package:flutter_delivery_app/domain/usecases/schedule/book_schedule.dart'
     as _i175;
 import 'package:flutter_delivery_app/domain/usecases/schedule/cancel_schedule.dart'
@@ -94,6 +104,8 @@ import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_b
     as _i606;
 import 'package:flutter_delivery_app/presentation/blocs/driver/driver_bloc.dart'
     as _i289;
+import 'package:flutter_delivery_app/presentation/blocs/rating/rating_bloc.dart'
+    as _i244;
 import 'package:flutter_delivery_app/presentation/blocs/schedule/schedule_bloc.dart'
     as _i500;
 import 'package:flutter_delivery_app/presentation/blocs/service/service_bloc.dart'
@@ -138,6 +150,8 @@ extension GetItInjectableX on _i174.GetIt {
             ));
     gh.lazySingleton<_i1038.UserRemoteDataSource>(
         () => _i1038.HttpUserRemoteDataSource(gh<_i519.Client>()));
+    gh.lazySingleton<_i407.RatingRemoteDataSource>(
+        () => _i407.HttpRatingRemoteDataSource(gh<_i519.Client>()));
     gh.lazySingleton<_i147.DriverRemoteDataSource>(
         () => _i147.HttpDriverRemoteDataSource(gh<_i519.Client>()));
     gh.lazySingleton<_i1035.ScheduleRemoteDataSource>(
@@ -180,6 +194,8 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i596.DeliveryInfoRemoteDataSource>(),
               gh<_i191.DeliveryInfoLocalDataSource>(),
             ));
+    gh.lazySingleton<_i56.RatingRepository>(
+        () => _i653.RatingRepositoryImpl(gh<_i407.RatingRemoteDataSource>()));
     gh.lazySingleton<_i591.ServiceRepository>(() => _i762.ServiceRepositoryImpl(
           remoteDataSource: gh<_i1047.ServiceRemoteDataSource>(),
           localDataSource: gh<_i1064.ServiceLocalDataSource>(),
@@ -210,6 +226,10 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i79.RegisterUser(gh<_i14.UserRepository>()));
     gh.lazySingleton<_i804.UpdateUser>(
         () => _i804.UpdateUser(gh<_i14.UserRepository>()));
+    gh.lazySingleton<_i345.AddRating>(
+        () => _i345.AddRating(gh<_i56.RatingRepository>()));
+    gh.lazySingleton<_i207.GetRatingsByUser>(
+        () => _i207.GetRatingsByUser(gh<_i56.RatingRepository>()));
     gh.factory<_i182.UserBloc>(() => _i182.UserBloc(
           registerUser: gh<_i79.RegisterUser>(),
           loginUser: gh<_i457.LoginUser>(),
@@ -222,6 +242,10 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i276.GetServiceById(gh<_i591.ServiceRepository>()));
     gh.lazySingleton<_i85.SearchServices>(
         () => _i85.SearchServices(gh<_i591.ServiceRepository>()));
+    gh.factory<_i244.RatingBloc>(() => _i244.RatingBloc(
+          addRating: gh<_i345.AddRating>(),
+          getRatingsByUser: gh<_i207.GetRatingsByUser>(),
+        ));
     gh.factory<_i606.DeliveryInfoBloc>(() => _i606.DeliveryInfoBloc(
           addDeliveryInfo: gh<_i281.AddDeliveryInfo>(),
           updateDeliveryInfo: gh<_i537.UpdateDeliveryInfo>(),
