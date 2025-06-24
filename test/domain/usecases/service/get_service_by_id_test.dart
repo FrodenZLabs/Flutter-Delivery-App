@@ -3,7 +3,7 @@ import 'package:flutter_delivery_app/domain/usecases/service/get_service_by_id.d
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import '../../helpers/mocks.mocks.dart';
+import '../../../helpers/mocks.mocks.dart';
 
 void main() {
   late GetServiceById useCase;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_delivery_app/data/models/user/user_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'core/di/injection.dart';
@@ -12,6 +13,7 @@ void main() async {
 
   // Register Hive Adapter
   Hive.registerAdapter(ServiceModelAdapter());
+  Hive.registerAdapter(UserModelAdapter());
 
   // Initialize Dependency Injection
   await configureDependencies();

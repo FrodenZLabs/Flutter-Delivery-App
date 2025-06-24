@@ -1,6 +1,10 @@
 import 'package:flutter_delivery_app/data/data_sources/local/service_local_data_source.dart';
+import 'package:flutter_delivery_app/data/data_sources/local/user_local_data_source.dart';
 import 'package:flutter_delivery_app/data/data_sources/remote/service_remote_data_source.dart';
+import 'package:flutter_delivery_app/data/data_sources/remote/user_remote_data_source.dart';
 import 'package:flutter_delivery_app/domain/repositories/service/service_repository.dart';
+import 'package:flutter_delivery_app/domain/repositories/user/user_repository.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 
@@ -8,6 +12,10 @@ import 'package:mockito/annotations.dart';
   ServiceRepository,
   ServiceLocalDataSource,
   ServiceRemoteDataSource,
+  UserRepository,
+  Box,
+  UserRemoteDataSource,
+  UserLocalDataSource,
   http.Client,
 ])
 void main() {}
