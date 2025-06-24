@@ -11,12 +11,16 @@
 import 'package:flutter_delivery_app/core/di/di_module.dart' as _i151;
 import 'package:flutter_delivery_app/data/data_sources/local/delivery_info_local_data_source.dart'
     as _i191;
+import 'package:flutter_delivery_app/data/data_sources/local/schedule_local_data_source.dart'
+    as _i367;
 import 'package:flutter_delivery_app/data/data_sources/local/service_local_data_source.dart'
     as _i1064;
 import 'package:flutter_delivery_app/data/data_sources/local/user_local_data_source.dart'
     as _i943;
 import 'package:flutter_delivery_app/data/data_sources/remote/delivery_info_remote_data_source.dart'
     as _i596;
+import 'package:flutter_delivery_app/data/data_sources/remote/schedule_remote_data_source.dart'
+    as _i1035;
 import 'package:flutter_delivery_app/data/data_sources/remote/service_remote_data_source.dart'
     as _i1047;
 import 'package:flutter_delivery_app/data/data_sources/remote/user_remote_data_source.dart'
@@ -26,12 +30,16 @@ import 'package:flutter_delivery_app/data/models/service/service_model.dart'
 import 'package:flutter_delivery_app/data/models/user/user_model.dart' as _i866;
 import 'package:flutter_delivery_app/data/repositories_impl/delivery_info_repository_impl.dart'
     as _i74;
+import 'package:flutter_delivery_app/data/repositories_impl/schedule_repository_impl.dart'
+    as _i498;
 import 'package:flutter_delivery_app/data/repositories_impl/service_repository_impl.dart'
     as _i762;
 import 'package:flutter_delivery_app/data/repositories_impl/user_repository_impl.dart'
     as _i1026;
 import 'package:flutter_delivery_app/domain/repositories/delivery/delivery_info_repository.dart'
     as _i993;
+import 'package:flutter_delivery_app/domain/repositories/schedule/schedule_repository.dart'
+    as _i24;
 import 'package:flutter_delivery_app/domain/repositories/service/service_repository.dart'
     as _i591;
 import 'package:flutter_delivery_app/domain/repositories/user/user_repository.dart'
@@ -48,6 +56,16 @@ import 'package:flutter_delivery_app/domain/usecases/delivery/set_default_delive
     as _i289;
 import 'package:flutter_delivery_app/domain/usecases/delivery/update_delivery_info.dart'
     as _i537;
+import 'package:flutter_delivery_app/domain/usecases/schedule/book_schedule.dart'
+    as _i175;
+import 'package:flutter_delivery_app/domain/usecases/schedule/cancel_schedule.dart'
+    as _i263;
+import 'package:flutter_delivery_app/domain/usecases/schedule/get_schedule_by_id.dart'
+    as _i859;
+import 'package:flutter_delivery_app/domain/usecases/schedule/get_schedules_by_user.dart'
+    as _i875;
+import 'package:flutter_delivery_app/domain/usecases/schedule/update_schedule.dart'
+    as _i108;
 import 'package:flutter_delivery_app/domain/usecases/service/get_all_services.dart'
     as _i8;
 import 'package:flutter_delivery_app/domain/usecases/service/get_service_by_id.dart'
@@ -64,6 +82,8 @@ import 'package:flutter_delivery_app/domain/usecases/user/update_user.dart'
     as _i804;
 import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_bloc.dart'
     as _i606;
+import 'package:flutter_delivery_app/presentation/blocs/schedule/schedule_bloc.dart'
+    as _i500;
 import 'package:flutter_delivery_app/presentation/blocs/service/service_bloc.dart'
     as _i367;
 import 'package:flutter_delivery_app/presentation/blocs/user/user_bloc.dart'
@@ -94,6 +114,13 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i191.HiveDeliveryInfoLocalDataSource());
     gh.lazySingleton<_i1064.ServiceLocalDataSource>(() =>
         _i1064.HiveServiceLocalDataSource(gh<_i979.Box<_i506.ServiceModel>>()));
+    gh.lazySingleton<_i1035.ScheduleRemoteDataSource>(
+        () => _i1035.HttpScheduleRemoteDataSource(
+              gh<_i519.Client>(),
+              gh<_i367.ScheduleLocalDataSource>(),
+            ));
+    gh.lazySingleton<_i367.ScheduleLocalDataSource>(
+        () => _i367.HiveScheduleLocalDataSource());
     gh.lazySingleton<_i943.UserLocalDataSource>(() =>
         _i943.HiveUserLocalDataSource(
             testBox: gh<_i979.Box<_i866.UserModel>>()));
@@ -106,9 +133,31 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i1038.HttpUserRemoteDataSource(gh<_i519.Client>()));
     gh.lazySingleton<_i1047.ServiceRemoteDataSource>(
         () => _i1047.HttpServiceRemoteDataSource(gh<_i519.Client>()));
+    gh.lazySingleton<_i24.ScheduleRepository>(
+        () => _i498.ScheduleRepositoryImpl(
+              gh<_i1035.ScheduleRemoteDataSource>(),
+              gh<_i367.ScheduleLocalDataSource>(),
+            ));
+    gh.lazySingleton<_i175.BookSchedule>(
+        () => _i175.BookSchedule(gh<_i24.ScheduleRepository>()));
+    gh.lazySingleton<_i263.CancelSchedule>(
+        () => _i263.CancelSchedule(gh<_i24.ScheduleRepository>()));
+    gh.lazySingleton<_i875.GetSchedulesByUser>(
+        () => _i875.GetSchedulesByUser(gh<_i24.ScheduleRepository>()));
+    gh.lazySingleton<_i859.GetScheduleById>(
+        () => _i859.GetScheduleById(gh<_i24.ScheduleRepository>()));
+    gh.lazySingleton<_i108.UpdateSchedule>(
+        () => _i108.UpdateSchedule(gh<_i24.ScheduleRepository>()));
     gh.lazySingleton<_i14.UserRepository>(() => _i1026.UserRepositoryImpl(
           gh<_i1038.UserRemoteDataSource>(),
           gh<_i943.UserLocalDataSource>(),
+        ));
+    gh.factory<_i500.ScheduleBloc>(() => _i500.ScheduleBloc(
+          bookSchedule: gh<_i175.BookSchedule>(),
+          updateSchedule: gh<_i108.UpdateSchedule>(),
+          cancelSchedule: gh<_i263.CancelSchedule>(),
+          getScheduleById: gh<_i859.GetScheduleById>(),
+          getSchedulesByUser: gh<_i875.GetSchedulesByUser>(),
         ));
     gh.lazySingleton<_i993.DeliveryInfoRepository>(
         () => _i74.DeliveryInfoRepositoryImpl(

@@ -4,33 +4,43 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i6;
-import 'dart:convert' as _i21;
-import 'dart:typed_data' as _i22;
+import 'dart:convert' as _i26;
+import 'dart:typed_data' as _i27;
 
 import 'package:flutter_delivery_app/data/data_sources/local/delivery_info_local_data_source.dart'
     as _i18;
+import 'package:flutter_delivery_app/data/data_sources/local/schedule_local_data_source.dart'
+    as _i23;
 import 'package:flutter_delivery_app/data/data_sources/local/service_local_data_source.dart'
     as _i8;
 import 'package:flutter_delivery_app/data/data_sources/local/user_local_data_source.dart'
     as _i15;
 import 'package:flutter_delivery_app/data/data_sources/remote/delivery_info_remote_data_source.dart'
     as _i20;
+import 'package:flutter_delivery_app/data/data_sources/remote/schedule_remote_data_source.dart'
+    as _i25;
 import 'package:flutter_delivery_app/data/data_sources/remote/service_remote_data_source.dart'
     as _i10;
 import 'package:flutter_delivery_app/data/data_sources/remote/user_remote_data_source.dart'
     as _i14;
 import 'package:flutter_delivery_app/data/models/delivery/delivery_info_model.dart'
     as _i19;
+import 'package:flutter_delivery_app/data/models/schedule/schedule_model.dart'
+    as _i24;
 import 'package:flutter_delivery_app/data/models/service/service_model.dart'
     as _i9;
 import 'package:flutter_delivery_app/data/models/user/user_model.dart' as _i3;
 import 'package:flutter_delivery_app/domain/entities/delivery/delivery_info.dart'
     as _i17;
+import 'package:flutter_delivery_app/domain/entities/schedule/schedule.dart'
+    as _i22;
 import 'package:flutter_delivery_app/domain/entities/service/service.dart'
     as _i7;
 import 'package:flutter_delivery_app/domain/entities/user/user.dart' as _i2;
 import 'package:flutter_delivery_app/domain/repositories/delivery/delivery_info_repository.dart'
     as _i16;
+import 'package:flutter_delivery_app/domain/repositories/schedule/schedule_repository.dart'
+    as _i21;
 import 'package:flutter_delivery_app/domain/repositories/service/service_repository.dart'
     as _i5;
 import 'package:flutter_delivery_app/domain/repositories/user/user_repository.dart'
@@ -862,6 +872,193 @@ class MockDeliveryInfoRemoteDataSource extends _i1.Mock
       ) as _i6.Future<List<_i19.DeliveryInfoModel>>);
 }
 
+/// A class which mocks [ScheduleRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockScheduleRepository extends _i1.Mock
+    implements _i21.ScheduleRepository {
+  MockScheduleRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<void> bookSchedule(_i22.Schedule? schedule) => (super.noSuchMethod(
+        Invocation.method(
+          #bookSchedule,
+          [schedule],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> updateSchedule(_i22.Schedule? schedule) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateSchedule,
+          [schedule],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> cancelSchedule(String? scheduleId) => (super.noSuchMethod(
+        Invocation.method(
+          #cancelSchedule,
+          [scheduleId],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<List<_i22.Schedule>> getSchedulesByUser(String? userId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getSchedulesByUser,
+          [userId],
+        ),
+        returnValue: _i6.Future<List<_i22.Schedule>>.value(<_i22.Schedule>[]),
+      ) as _i6.Future<List<_i22.Schedule>>);
+
+  @override
+  _i6.Future<_i22.Schedule?> getScheduleById(String? scheduleId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getScheduleById,
+          [scheduleId],
+        ),
+        returnValue: _i6.Future<_i22.Schedule?>.value(),
+      ) as _i6.Future<_i22.Schedule?>);
+}
+
+/// A class which mocks [ScheduleLocalDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockScheduleLocalDataSource extends _i1.Mock
+    implements _i23.ScheduleLocalDataSource {
+  MockScheduleLocalDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<void> cacheSchedule(_i24.ScheduleModel? schedule) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #cacheSchedule,
+          [schedule],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> updateSchedule(_i24.ScheduleModel? schedule) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateSchedule,
+          [schedule],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> deleteSchedule(String? id) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteSchedule,
+          [id],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<_i24.ScheduleModel?> getScheduleById(String? id) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getScheduleById,
+          [id],
+        ),
+        returnValue: _i6.Future<_i24.ScheduleModel?>.value(),
+      ) as _i6.Future<_i24.ScheduleModel?>);
+
+  @override
+  _i6.Future<List<_i24.ScheduleModel>> getSchedulesByUser(String? userId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getSchedulesByUser,
+          [userId],
+        ),
+        returnValue:
+            _i6.Future<List<_i24.ScheduleModel>>.value(<_i24.ScheduleModel>[]),
+      ) as _i6.Future<List<_i24.ScheduleModel>>);
+}
+
+/// A class which mocks [ScheduleRemoteDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockScheduleRemoteDataSource extends _i1.Mock
+    implements _i25.ScheduleRemoteDataSource {
+  MockScheduleRemoteDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<void> bookSchedule(_i24.ScheduleModel? schedule) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #bookSchedule,
+          [schedule],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> updateSchedule(_i24.ScheduleModel? schedule) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateSchedule,
+          [schedule],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> cancelSchedule(String? id) => (super.noSuchMethod(
+        Invocation.method(
+          #cancelSchedule,
+          [id],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<_i24.ScheduleModel?> getScheduleById(String? id) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getScheduleById,
+          [id],
+        ),
+        returnValue: _i6.Future<_i24.ScheduleModel?>.value(),
+      ) as _i6.Future<_i24.ScheduleModel?>);
+
+  @override
+  _i6.Future<List<_i24.ScheduleModel>> getSchedulesByUser(String? userId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getSchedulesByUser,
+          [userId],
+        ),
+        returnValue:
+            _i6.Future<List<_i24.ScheduleModel>>.value(<_i24.ScheduleModel>[]),
+      ) as _i6.Future<List<_i24.ScheduleModel>>);
+}
+
 /// A class which mocks [Client].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -917,7 +1114,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i21.Encoding? encoding,
+    _i26.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -948,7 +1145,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i21.Encoding? encoding,
+    _i26.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -979,7 +1176,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i21.Encoding? encoding,
+    _i26.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1010,7 +1207,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i21.Encoding? encoding,
+    _i26.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1058,7 +1255,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
       ) as _i6.Future<String>);
 
   @override
-  _i6.Future<_i22.Uint8List> readBytes(
+  _i6.Future<_i27.Uint8List> readBytes(
     Uri? url, {
     Map<String, String>? headers,
   }) =>
@@ -1068,8 +1265,8 @@ class MockClient extends _i1.Mock implements _i4.Client {
           [url],
           {#headers: headers},
         ),
-        returnValue: _i6.Future<_i22.Uint8List>.value(_i22.Uint8List(0)),
-      ) as _i6.Future<_i22.Uint8List>);
+        returnValue: _i6.Future<_i27.Uint8List>.value(_i27.Uint8List(0)),
+      ) as _i6.Future<_i27.Uint8List>);
 
   @override
   _i6.Future<_i4.StreamedResponse> send(_i4.BaseRequest? request) =>
