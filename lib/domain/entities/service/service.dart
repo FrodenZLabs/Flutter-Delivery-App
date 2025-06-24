@@ -7,7 +7,7 @@ class Service {
   final double baseFee; // Base service charge
   final double perKmFee; // Delivery/travel fee per kilometer
   final bool available; // Is the service currently available?
-  final String openDays; // e.g. ['Monday', 'Tuesday', ...]
+  final String openDay; // e.g. ['Monday', 'Tuesday', ...]
   final String closeDay; // e.g. 'Friday'
   final String openTime; // e.g. '8:00 AM'
   final String closeTime; // e.g. '5:00 PM'
@@ -21,7 +21,7 @@ class Service {
     required this.baseFee,
     required this.perKmFee,
     required this.available,
-    required this.openDays,
+    required this.openDay,
     required this.closeDay,
     required this.openTime,
     required this.closeTime,
