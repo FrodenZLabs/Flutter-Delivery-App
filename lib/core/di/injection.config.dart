@@ -25,6 +25,8 @@ import 'package:flutter_delivery_app/domain/usecases/service/get_service_by_id.d
     as _i276;
 import 'package:flutter_delivery_app/domain/usecases/service/search_services.dart'
     as _i85;
+import 'package:flutter_delivery_app/presentation/blocs/service/service_bloc.dart'
+    as _i367;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:hive/hive.dart' as _i979;
 import 'package:http/http.dart' as _i519;
@@ -61,6 +63,11 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i276.GetServiceById(gh<_i591.ServiceRepository>()));
     gh.lazySingleton<_i85.SearchServices>(
         () => _i85.SearchServices(gh<_i591.ServiceRepository>()));
+    gh.factory<_i367.ServiceBloc>(() => _i367.ServiceBloc(
+          getAllServices: gh<_i8.GetAllServices>(),
+          getServiceById: gh<_i276.GetServiceById>(),
+          searchServices: gh<_i85.SearchServices>(),
+        ));
     return this;
   }
 }

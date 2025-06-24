@@ -143,6 +143,27 @@ class MockServiceRemoteDataSource extends _i1.Mock
         returnValue:
             _i4.Future<List<_i7.ServiceModel>>.value(<_i7.ServiceModel>[]),
       ) as _i4.Future<List<_i7.ServiceModel>>);
+
+  @override
+  _i4.Future<_i7.ServiceModel?> fetchServiceById(String? id) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #fetchServiceById,
+          [id],
+        ),
+        returnValue: _i4.Future<_i7.ServiceModel?>.value(),
+      ) as _i4.Future<_i7.ServiceModel?>);
+
+  @override
+  _i4.Future<List<_i7.ServiceModel>> searchServices(String? keyword) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #searchServices,
+          [keyword],
+        ),
+        returnValue:
+            _i4.Future<List<_i7.ServiceModel>>.value(<_i7.ServiceModel>[]),
+      ) as _i4.Future<List<_i7.ServiceModel>>);
 }
 
 /// A class which mocks [Client].
