@@ -9,24 +9,45 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:flutter_delivery_app/core/di/di_module.dart' as _i151;
+import 'package:flutter_delivery_app/data/data_sources/local/delivery_info_local_data_source.dart'
+    as _i191;
 import 'package:flutter_delivery_app/data/data_sources/local/service_local_data_source.dart'
     as _i1064;
 import 'package:flutter_delivery_app/data/data_sources/local/user_local_data_source.dart'
     as _i943;
+import 'package:flutter_delivery_app/data/data_sources/remote/delivery_info_remote_data_source.dart'
+    as _i596;
 import 'package:flutter_delivery_app/data/data_sources/remote/service_remote_data_source.dart'
     as _i1047;
 import 'package:flutter_delivery_app/data/data_sources/remote/user_remote_data_source.dart'
     as _i1038;
 import 'package:flutter_delivery_app/data/models/service/service_model.dart'
     as _i506;
+import 'package:flutter_delivery_app/data/models/user/user_model.dart' as _i866;
+import 'package:flutter_delivery_app/data/repositories_impl/delivery_info_repository_impl.dart'
+    as _i74;
 import 'package:flutter_delivery_app/data/repositories_impl/service_repository_impl.dart'
     as _i762;
 import 'package:flutter_delivery_app/data/repositories_impl/user_repository_impl.dart'
     as _i1026;
+import 'package:flutter_delivery_app/domain/repositories/delivery/delivery_info_repository.dart'
+    as _i993;
 import 'package:flutter_delivery_app/domain/repositories/service/service_repository.dart'
     as _i591;
 import 'package:flutter_delivery_app/domain/repositories/user/user_repository.dart'
     as _i14;
+import 'package:flutter_delivery_app/domain/usecases/delivery/add_delivery_info.dart'
+    as _i281;
+import 'package:flutter_delivery_app/domain/usecases/delivery/delete_delivery_info.dart'
+    as _i233;
+import 'package:flutter_delivery_app/domain/usecases/delivery/get_all_delivery_info.dart'
+    as _i515;
+import 'package:flutter_delivery_app/domain/usecases/delivery/get_default_delivery_info.dart'
+    as _i525;
+import 'package:flutter_delivery_app/domain/usecases/delivery/set_default_delivery_info.dart'
+    as _i289;
+import 'package:flutter_delivery_app/domain/usecases/delivery/update_delivery_info.dart'
+    as _i537;
 import 'package:flutter_delivery_app/domain/usecases/service/get_all_services.dart'
     as _i8;
 import 'package:flutter_delivery_app/domain/usecases/service/get_service_by_id.dart'
@@ -41,6 +62,8 @@ import 'package:flutter_delivery_app/domain/usecases/user/register_user.dart'
     as _i79;
 import 'package:flutter_delivery_app/domain/usecases/user/update_user.dart'
     as _i804;
+import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_bloc.dart'
+    as _i606;
 import 'package:flutter_delivery_app/presentation/blocs/service/service_bloc.dart'
     as _i367;
 import 'package:flutter_delivery_app/presentation/blocs/user/user_bloc.dart'
@@ -67,10 +90,18 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.lazySingleton<_i519.Client>(() => dIModule.httpClient);
+    gh.lazySingleton<_i191.DeliveryInfoLocalDataSource>(
+        () => _i191.HiveDeliveryInfoLocalDataSource());
     gh.lazySingleton<_i1064.ServiceLocalDataSource>(() =>
         _i1064.HiveServiceLocalDataSource(gh<_i979.Box<_i506.ServiceModel>>()));
-    gh.lazySingleton<_i943.UserLocalDataSource>(
-        () => _i943.HiveUserLocalDataSource());
+    gh.lazySingleton<_i943.UserLocalDataSource>(() =>
+        _i943.HiveUserLocalDataSource(
+            testBox: gh<_i979.Box<_i866.UserModel>>()));
+    gh.lazySingleton<_i596.DeliveryInfoRemoteDataSource>(
+        () => _i596.HttpDeliveryInfoRemoteDataSource(
+              gh<_i519.Client>(),
+              gh<_i191.DeliveryInfoLocalDataSource>(),
+            ));
     gh.lazySingleton<_i1038.UserRemoteDataSource>(
         () => _i1038.HttpUserRemoteDataSource(gh<_i519.Client>()));
     gh.lazySingleton<_i1047.ServiceRemoteDataSource>(
@@ -79,10 +110,27 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i1038.UserRemoteDataSource>(),
           gh<_i943.UserLocalDataSource>(),
         ));
+    gh.lazySingleton<_i993.DeliveryInfoRepository>(
+        () => _i74.DeliveryInfoRepositoryImpl(
+              gh<_i596.DeliveryInfoRemoteDataSource>(),
+              gh<_i191.DeliveryInfoLocalDataSource>(),
+            ));
     gh.lazySingleton<_i591.ServiceRepository>(() => _i762.ServiceRepositoryImpl(
           remoteDataSource: gh<_i1047.ServiceRemoteDataSource>(),
           localDataSource: gh<_i1064.ServiceLocalDataSource>(),
         ));
+    gh.lazySingleton<_i281.AddDeliveryInfo>(
+        () => _i281.AddDeliveryInfo(gh<_i993.DeliveryInfoRepository>()));
+    gh.lazySingleton<_i233.DeleteDeliveryInfo>(
+        () => _i233.DeleteDeliveryInfo(gh<_i993.DeliveryInfoRepository>()));
+    gh.lazySingleton<_i515.GetAllDeliveryInfo>(
+        () => _i515.GetAllDeliveryInfo(gh<_i993.DeliveryInfoRepository>()));
+    gh.lazySingleton<_i525.GetDefaultDeliveryInfo>(
+        () => _i525.GetDefaultDeliveryInfo(gh<_i993.DeliveryInfoRepository>()));
+    gh.lazySingleton<_i289.SetDefaultDeliveryInfo>(
+        () => _i289.SetDefaultDeliveryInfo(gh<_i993.DeliveryInfoRepository>()));
+    gh.lazySingleton<_i537.UpdateDeliveryInfo>(
+        () => _i537.UpdateDeliveryInfo(gh<_i993.DeliveryInfoRepository>()));
     gh.lazySingleton<_i925.GetUser>(
         () => _i925.GetUser(gh<_i14.UserRepository>()));
     gh.lazySingleton<_i457.LoginUser>(
@@ -103,6 +151,14 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i276.GetServiceById(gh<_i591.ServiceRepository>()));
     gh.lazySingleton<_i85.SearchServices>(
         () => _i85.SearchServices(gh<_i591.ServiceRepository>()));
+    gh.factory<_i606.DeliveryInfoBloc>(() => _i606.DeliveryInfoBloc(
+          addDeliveryInfo: gh<_i281.AddDeliveryInfo>(),
+          updateDeliveryInfo: gh<_i537.UpdateDeliveryInfo>(),
+          deleteDeliveryInfo: gh<_i233.DeleteDeliveryInfo>(),
+          getAllDeliveryInfo: gh<_i515.GetAllDeliveryInfo>(),
+          getDefaultDeliveryInfo: gh<_i525.GetDefaultDeliveryInfo>(),
+          setDefaultDeliveryInfo: gh<_i289.SetDefaultDeliveryInfo>(),
+        ));
     gh.factory<_i367.ServiceBloc>(() => _i367.ServiceBloc(
           getAllServices: gh<_i8.GetAllServices>(),
           getServiceById: gh<_i276.GetServiceById>(),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_delivery_app/core/di/injection.dart';
+import 'package:flutter_delivery_app/data/models/delivery/delivery_info_model.dart';
+import 'package:flutter_delivery_app/data/models/service/service_model.dart';
 import 'package:flutter_delivery_app/data/models/user/user_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
-import 'core/di/injection.dart';
-import 'data/models/service/service_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +14,7 @@ void main() async {
   // Register Hive Adapter
   Hive.registerAdapter(ServiceModelAdapter());
   Hive.registerAdapter(UserModelAdapter());
+  Hive.registerAdapter(DeliveryInfoModelAdapter());
 
   // Initialize Dependency Injection
   await configureDependencies();

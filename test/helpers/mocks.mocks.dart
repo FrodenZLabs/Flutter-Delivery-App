@@ -4,23 +4,33 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i6;
-import 'dart:convert' as _i16;
-import 'dart:typed_data' as _i17;
+import 'dart:convert' as _i21;
+import 'dart:typed_data' as _i22;
 
+import 'package:flutter_delivery_app/data/data_sources/local/delivery_info_local_data_source.dart'
+    as _i18;
 import 'package:flutter_delivery_app/data/data_sources/local/service_local_data_source.dart'
     as _i8;
 import 'package:flutter_delivery_app/data/data_sources/local/user_local_data_source.dart'
     as _i15;
+import 'package:flutter_delivery_app/data/data_sources/remote/delivery_info_remote_data_source.dart'
+    as _i20;
 import 'package:flutter_delivery_app/data/data_sources/remote/service_remote_data_source.dart'
     as _i10;
 import 'package:flutter_delivery_app/data/data_sources/remote/user_remote_data_source.dart'
     as _i14;
+import 'package:flutter_delivery_app/data/models/delivery/delivery_info_model.dart'
+    as _i19;
 import 'package:flutter_delivery_app/data/models/service/service_model.dart'
     as _i9;
 import 'package:flutter_delivery_app/data/models/user/user_model.dart' as _i3;
+import 'package:flutter_delivery_app/domain/entities/delivery/delivery_info.dart'
+    as _i17;
 import 'package:flutter_delivery_app/domain/entities/service/service.dart'
     as _i7;
 import 'package:flutter_delivery_app/domain/entities/user/user.dart' as _i2;
+import 'package:flutter_delivery_app/domain/repositories/delivery/delivery_info_repository.dart'
+    as _i16;
 import 'package:flutter_delivery_app/domain/repositories/service/service_repository.dart'
     as _i5;
 import 'package:flutter_delivery_app/domain/repositories/user/user_repository.dart'
@@ -641,6 +651,217 @@ class MockUserLocalDataSource extends _i1.Mock
       ) as _i6.Future<void>);
 }
 
+/// A class which mocks [DeliveryInfoRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDeliveryInfoRepository extends _i1.Mock
+    implements _i16.DeliveryInfoRepository {
+  MockDeliveryInfoRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<void> addDeliveryInfo(_i17.DeliveryInfo? info) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #addDeliveryInfo,
+          [info],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> updateDeliveryInfo(_i17.DeliveryInfo? info) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateDeliveryInfo,
+          [info],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> deleteDeliveryInfo(String? id) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteDeliveryInfo,
+          [id],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<List<_i17.DeliveryInfo>> getAllDeliveryInfo(String? userId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAllDeliveryInfo,
+          [userId],
+        ),
+        returnValue:
+            _i6.Future<List<_i17.DeliveryInfo>>.value(<_i17.DeliveryInfo>[]),
+      ) as _i6.Future<List<_i17.DeliveryInfo>>);
+
+  @override
+  _i6.Future<void> setDefaultDeliveryInfo(String? id) => (super.noSuchMethod(
+        Invocation.method(
+          #setDefaultDeliveryInfo,
+          [id],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<_i17.DeliveryInfo?> getDefaultDeliveryInfo(String? userId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getDefaultDeliveryInfo,
+          [userId],
+        ),
+        returnValue: _i6.Future<_i17.DeliveryInfo?>.value(),
+      ) as _i6.Future<_i17.DeliveryInfo?>);
+}
+
+/// A class which mocks [DeliveryInfoLocalDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDeliveryInfoLocalDataSource extends _i1.Mock
+    implements _i18.DeliveryInfoLocalDataSource {
+  MockDeliveryInfoLocalDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<void> cacheDeliveryInfo(_i19.DeliveryInfoModel? info) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #cacheDeliveryInfo,
+          [info],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> updateDeliveryInfo(_i19.DeliveryInfoModel? info) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateDeliveryInfo,
+          [info],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> deleteDeliveryInfo(String? id) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteDeliveryInfo,
+          [id],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<List<_i19.DeliveryInfoModel>> getAllDeliveryInfo(String? userId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAllDeliveryInfo,
+          [userId],
+        ),
+        returnValue: _i6.Future<List<_i19.DeliveryInfoModel>>.value(
+            <_i19.DeliveryInfoModel>[]),
+      ) as _i6.Future<List<_i19.DeliveryInfoModel>>);
+
+  @override
+  _i6.Future<void> setDefaultDeliveryInfo(String? id) => (super.noSuchMethod(
+        Invocation.method(
+          #setDefaultDeliveryInfo,
+          [id],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<_i19.DeliveryInfoModel?> getDefaultDeliveryInfo(String? userId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getDefaultDeliveryInfo,
+          [userId],
+        ),
+        returnValue: _i6.Future<_i19.DeliveryInfoModel?>.value(),
+      ) as _i6.Future<_i19.DeliveryInfoModel?>);
+
+  @override
+  _i6.Future<void> syncAllDeliveryInfo(List<_i19.DeliveryInfoModel>? infos) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #syncAllDeliveryInfo,
+          [infos],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+}
+
+/// A class which mocks [DeliveryInfoRemoteDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDeliveryInfoRemoteDataSource extends _i1.Mock
+    implements _i20.DeliveryInfoRemoteDataSource {
+  MockDeliveryInfoRemoteDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<void> addDeliveryInfo(_i19.DeliveryInfoModel? info) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #addDeliveryInfo,
+          [info],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> updateDeliveryInfo(_i19.DeliveryInfoModel? info) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateDeliveryInfo,
+          [info],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> deleteDeliveryInfo(String? id) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteDeliveryInfo,
+          [id],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<List<_i19.DeliveryInfoModel>> fetchAllDeliveryInfo(
+          String? userId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #fetchAllDeliveryInfo,
+          [userId],
+        ),
+        returnValue: _i6.Future<List<_i19.DeliveryInfoModel>>.value(
+            <_i19.DeliveryInfoModel>[]),
+      ) as _i6.Future<List<_i19.DeliveryInfoModel>>);
+}
+
 /// A class which mocks [Client].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -696,7 +917,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i16.Encoding? encoding,
+    _i21.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -727,7 +948,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i16.Encoding? encoding,
+    _i21.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -758,7 +979,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i16.Encoding? encoding,
+    _i21.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -789,7 +1010,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i16.Encoding? encoding,
+    _i21.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -837,7 +1058,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
       ) as _i6.Future<String>);
 
   @override
-  _i6.Future<_i17.Uint8List> readBytes(
+  _i6.Future<_i22.Uint8List> readBytes(
     Uri? url, {
     Map<String, String>? headers,
   }) =>
@@ -847,8 +1068,8 @@ class MockClient extends _i1.Mock implements _i4.Client {
           [url],
           {#headers: headers},
         ),
-        returnValue: _i6.Future<_i17.Uint8List>.value(_i17.Uint8List(0)),
-      ) as _i6.Future<_i17.Uint8List>);
+        returnValue: _i6.Future<_i22.Uint8List>.value(_i22.Uint8List(0)),
+      ) as _i6.Future<_i22.Uint8List>);
 
   @override
   _i6.Future<_i4.StreamedResponse> send(_i4.BaseRequest? request) =>
