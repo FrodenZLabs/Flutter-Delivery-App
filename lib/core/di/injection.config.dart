@@ -104,6 +104,8 @@ import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_b
     as _i606;
 import 'package:flutter_delivery_app/presentation/blocs/driver/driver_bloc.dart'
     as _i289;
+import 'package:flutter_delivery_app/presentation/blocs/home/navbar_cubit.dart'
+    as _i860;
 import 'package:flutter_delivery_app/presentation/blocs/rating/rating_bloc.dart'
     as _i244;
 import 'package:flutter_delivery_app/presentation/blocs/schedule/schedule_bloc.dart'
@@ -133,6 +135,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => dIModule.serviceBox,
       preResolve: true,
     );
+    gh.factory<_i860.NavbarCubit>(() => _i860.NavbarCubit());
     gh.lazySingleton<_i519.Client>(() => dIModule.httpClient);
     gh.lazySingleton<_i191.DeliveryInfoLocalDataSource>(
         () => _i191.HiveDeliveryInfoLocalDataSource());
