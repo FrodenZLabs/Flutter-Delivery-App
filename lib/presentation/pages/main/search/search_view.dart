@@ -107,18 +107,12 @@ class _SearchViewState extends State<SearchView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Search Services',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
-        ),
-        backgroundColor: kBackgroundColor,
-      ),
       backgroundColor: kBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            const SizedBox(height: 25),
             // 🔍 Search Field
             TextFormField(
               controller: _searchController,

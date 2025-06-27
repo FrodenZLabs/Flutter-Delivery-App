@@ -15,14 +15,16 @@ class _OrderViewState extends State<OrderView>
   final List<Map<String, String>> pendingOrders = [
     {
       'orderId': 'ORD001',
-      'service': 'Food Delivery',
-      'date': '26 June 2025',
+      'service': 'Dry Cleaning',
+      'image': 'assets/images/dry-cleaning.png',
+      'date': '26 June 2025 at 2:00 PM',
       'status': 'Pending',
     },
     {
       'orderId': 'ORD002',
-      'service': 'Parcel Pickup',
-      'date': '25 June 2025',
+      'service': 'Shoe Repair',
+      'image': 'assets/images/shoe-repair.png',
+      'date': '25 June 2025 at 11:00 AM',
       'status': 'Pending',
     },
   ];
@@ -31,13 +33,15 @@ class _OrderViewState extends State<OrderView>
     {
       'orderId': 'ORD003',
       'service': 'Grocery Delivery',
-      'date': '24 June 2025',
+      'image': 'assets/images/grocery.png',
+      'date': '24 June 2025 at 5:00 PM',
       'status': 'Completed',
     },
     {
       'orderId': 'ORD004',
       'service': 'Laundry Service',
-      'date': '23 June 2025',
+      'image': 'assets/images/laundry.png',
+      'date': '23 June 2025 at 10:30 AM',
       'status': 'Completed',
     },
   ];
@@ -46,7 +50,8 @@ class _OrderViewState extends State<OrderView>
     {
       'orderId': 'ORD005',
       'service': 'Courier Service',
-      'date': '22 June 2025',
+      'image': 'assets/images/delivery.png',
+      'date': '22 June 2025 at 9:00 AM',
       'status': 'Canceled',
     },
   ];
@@ -69,14 +74,29 @@ class _OrderViewState extends State<OrderView>
     }
 
     return ListView.separated(
+      padding: const EdgeInsets.symmetric(vertical: 16),
       itemCount: orders.length,
-      separatorBuilder: (context, index) => const Divider(height: 1),
+      separatorBuilder: (context, index) => const Divider(height: 5),
       itemBuilder: (context, index) {
         final order = orders[index];
         return ListTile(
-          leading: const Icon(Icons.local_shipping, color: Colors.blueAccent),
-          title: Text(order['service']!),
-          subtitle: Text('Date: ${order['date']}'),
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.asset(
+              order['image']!,
+              width: 50,
+              height: 50,
+              fit: BoxFit.cover,
+            ),
+          ),
+          title: Text(
+            order['service']!,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          subtitle: Text(
+            order['date']!,
+            style: const TextStyle(color: Colors.grey),
+          ),
           trailing: Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
@@ -112,6 +132,10 @@ class _OrderViewState extends State<OrderView>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.list_alt),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: const Text(
           'My Orders',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),

@@ -8,11 +8,26 @@ class ProfileView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Profile',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
-        ),
         backgroundColor: kBackgroundColor,
+        title: Row(
+          children: [
+            const Icon(
+              Icons.person,
+              size: 30,
+              color: Colors.black, // ✅ Adjust icon color if needed
+            ),
+            const SizedBox(width: 24),
+            const Text(
+              'Profile',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w500,
+                color:
+                    Colors.black, // ✅ Optional: Ensure text color matches theme
+              ),
+            ),
+          ],
+        ),
       ),
       backgroundColor: kBackgroundColor,
       body: SingleChildScrollView(

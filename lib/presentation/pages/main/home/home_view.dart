@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
-import 'package:flutter_delivery_app/presentation/widgets/input_search_form_field.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -58,11 +57,43 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: const Text(
-          'K-Labs Delivery Services',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-        ),
         backgroundColor: kBackgroundColor,
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            // ✅ Logo Image
+            Image.asset(
+              'assets/images/logo.png', // <-- Replace with your actual logo path
+              height: 60,
+            ),
+            const SizedBox(width: 16), // Space between image and text
+            // ✅ Text Title
+            const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'K-Labs',
+                  style: TextStyle(
+                    fontSize: 22,
+
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black, // Adjust if needed
+                  ),
+                ),
+                Text(
+                  'Delivery Services',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.brown,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
       backgroundColor: kBackgroundColor,
       body: SafeArea(
@@ -71,15 +102,7 @@ class _HomeViewState extends State<HomeView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 🔍 Search Section
-              SearchInputField(
-                hintText: 'Search services...',
-                controller: _searchController,
-                onSearchTap: () {
-                  print('Searching for: ${_searchController.text}');
-                },
-              ),
-              const SizedBox(height: 20),
+              const Divider(),
 
               // ⭐ Popular Services (Horizontal Cards with Image and Label)
               const Text(
