@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter_delivery_app/domain/entities/user/user.dart';
 import 'package:hive/hive.dart';
 
 part 'user_model.g.dart';
+
+UserModel userModelFromJson(String str) => UserModel.fromJson(json.decode(str));
+String userModelToJson(UserModel data) => json.encode(data.toJson());
 
 @HiveType(typeId: 1)
 class UserModel extends User {

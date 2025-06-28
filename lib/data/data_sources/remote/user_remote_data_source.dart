@@ -1,64 +1,76 @@
 import 'dart:convert';
 
-import 'package:flutter_delivery_app/data/models/user/user_model.dart';
+import 'package:flutter_delivery_app/core/constants/strings.dart';
+import 'package:flutter_delivery_app/core/error/exceptions.dart';
+import 'package:flutter_delivery_app/core/error/failures.dart';
+import 'package:flutter_delivery_app/data/data_sources/local/user_local_data_source.dart';
+import 'package:flutter_delivery_app/data/models/user/authentication_response_model.dart';
+import 'package:flutter_delivery_app/domain/usecases/user/login_use_case.dart';
+import 'package:flutter_delivery_app/domain/usecases/user/register_use_case.dart';
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 
 abstract class UserRemoteDataSource {
-  Future<UserModel> registerUser(UserModel user);
-  Future<UserModel> loginUser(String email, String password);
-  Future<UserModel> updateUser(UserModel user);
-  Future<UserModel?> getUser(String id);
+  Future<AuthenticationResponseModel> registerUser(RegisterParams params);
+  Future<AuthenticationResponseModel> loginUser(LoginParams params);
 }
 
 @LazySingleton(as: UserRemoteDataSource)
 class HttpUserRemoteDataSource implements UserRemoteDataSource {
   final http.Client client;
-  final String baseUrl = 'https://example.com/api/users';
+  final UserLocalDataSource localDataSource;
 
-  HttpUserRemoteDataSource(this.client);
-
-  @override
-  Future<UserModel> registerUser(UserModel user) async {
-    final response = await client.post(
-      Uri.parse('$baseUrl/register'),
-      body: json.encode(user.toJson()),
-      headers: {'Content-Type': 'application/json'},
-    );
-    final data = json.decode(response.body);
-    return UserModel.fromJson(data);
-  }
+  HttpUserRemoteDataSource(this.client, this.localDataSource);
 
   @override
-  Future<UserModel> loginUser(String email, String password) async {
-    final response = await client.post(
-      Uri.parse('$baseUrl/login'),
-      body: json.encode({'email': email, 'password': password}),
-      headers: {'Content-Type': 'application/json'},
-    );
-    final data = json.decode(response.body);
-    return UserModel.fromJson(data);
-  }
+  Future<AuthenticationResponseModel> loginUser(LoginParams params) async {
+    try {
+      final response = await client.post(
+        Uri.parse('$baseUrl/auth/sign-in'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'email': params.email, 'password': params.password}),
+      );
 
-  @override
-  Future<UserModel?> getUser(String id) async {
-    final response = await client.get(Uri.parse('$baseUrl/$id'));
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return UserModel.fromJson(data);
-    } else {
-      return null;
+      if (response.statusCode == 200) {
+        final authResponse = authenticationResponseModelFromJson(response.body);
+        await localDataSource.saveToken(authResponse.token);
+        await localDataSource.saveUser(authResponse.user);
+        return authResponse;
+      } else if (response.statusCode == 400 || response.statusCode == 401) {
+        throw CredentialFailure();
+      } else {
+        throw ServerException();
+      }
+    } catch (e) {
+      throw ServerException();
     }
   }
 
   @override
-  Future<UserModel> updateUser(UserModel user) async {
-    final response = await client.put(
-      Uri.parse('$baseUrl/${user.id}'),
-      body: json.encode(user.toJson()),
-      headers: {'Content-Type': 'application/json'},
-    );
-    final data = json.decode(response.body);
-    return UserModel.fromJson(data);
+  Future<AuthenticationResponseModel> registerUser(
+    RegisterParams params,
+  ) async {
+    try {
+      final response = await client.post(
+        Uri.parse('$baseUrl/auth/sign-up'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'firstName': params.firstName,
+          'lastName': params.lastName,
+          'email': params.email,
+          'password': params.password,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        return authenticationResponseModelFromJson(response.body);
+      } else if (response.statusCode == 400 || response.statusCode == 401) {
+        throw CredentialFailure();
+      } else {
+        throw ServerException();
+      }
+    } catch (e) {
+      throw ServerException();
+    }
   }
 }

@@ -1,29 +1,35 @@
 part of 'user_bloc.dart';
 
-abstract class UserState extends Equatable {
-  const UserState();
+@immutable
+abstract class UserState extends Equatable {}
+
+final class UserInitial extends UserState {
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
-class UserInitial extends UserState {}
+final class UserLoading extends UserState {
+  @override
+  List<Object> get props => [];
+}
 
-class UserLoading extends UserState {}
-
-class UserAuthenticated extends UserState {
+final class UserLogged extends UserState {
   final User user;
-  const UserAuthenticated(this.user);
+  UserLogged(this.user);
 
   @override
   List<Object> get props => [user];
 }
 
-class UserUnauthenticated extends UserState {}
-
-class UserError extends UserState {
-  final String message;
-  const UserError(this.message);
+final class UserLoggedFail extends UserState {
+  final Failure failure;
+  UserLoggedFail(this.failure);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [];
+}
+
+final class UserLoggedOut extends UserState {
+  @override
+  List<Object> get props => [];
 }

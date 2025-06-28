@@ -1,5 +1,5 @@
 import 'package:flutter_delivery_app/domain/entities/user/user.dart';
-import 'package:flutter_delivery_app/domain/usecases/user/get_user.dart';
+import 'package:flutter_delivery_app/domain/usecases/user/get_local_user_use_case.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 

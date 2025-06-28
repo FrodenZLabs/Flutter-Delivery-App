@@ -1,45 +1,18 @@
 part of 'user_bloc.dart';
 
-abstract class UserEvent extends Equatable {
-  const UserEvent();
-  @override
-  List<Object?> get props => [];
+@immutable
+abstract class UserEvent {}
+
+class LoginUserEvent extends UserEvent {
+  final LoginParams params;
+  LoginUserEvent(this.params);
 }
 
 class RegisterUserEvent extends UserEvent {
-  final User user;
-  const RegisterUserEvent(this.user);
-
-  @override
-  List<Object> get props => [user];
-}
-
-class LoginUserEvent extends UserEvent {
-  final String email;
-  final String password;
-
-  const LoginUserEvent(this.email, this.password);
-
-  @override
-  List<Object> get props => [email, password];
-}
-
-class GetUserEvent extends UserEvent {
-  final String userId;
-
-  const GetUserEvent(this.userId);
-
-  @override
-  List<Object> get props => [userId];
-}
-
-class UpdateUserEvent extends UserEvent {
-  final User user;
-
-  const UpdateUserEvent(this.user);
-
-  @override
-  List<Object> get props => [user];
+  final RegisterParams params;
+  RegisterUserEvent(this.params);
 }
 
 class LogoutUserEvent extends UserEvent {}
+
+class CheckUserEvent extends UserEvent {}

@@ -1,9 +1,9 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_delivery_app/domain/entities/user/user.dart';
-import 'package:flutter_delivery_app/domain/usecases/user/get_user.dart';
-import 'package:flutter_delivery_app/domain/usecases/user/login_user.dart';
-import 'package:flutter_delivery_app/domain/usecases/user/register_user.dart';
-import 'package:flutter_delivery_app/domain/usecases/user/update_user.dart';
+import 'package:flutter_delivery_app/domain/usecases/user/get_local_user_use_case.dart';
+import 'package:flutter_delivery_app/domain/usecases/user/login_use_case.dart';
+import 'package:flutter_delivery_app/domain/usecases/user/logout_use_case.dart';
+import 'package:flutter_delivery_app/domain/usecases/user/register_use_case.dart';
 import 'package:flutter_delivery_app/presentation/blocs/user/user_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';

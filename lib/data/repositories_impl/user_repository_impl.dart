@@ -1,60 +1,68 @@
+import 'package:dartz/dartz.dart';
+import 'package:flutter_delivery_app/core/error/failures.dart';
+import 'package:flutter_delivery_app/core/network/network_info.dart';
+import 'package:flutter_delivery_app/core/usecases/usecase.dart';
 import 'package:flutter_delivery_app/data/data_sources/local/user_local_data_source.dart';
 import 'package:flutter_delivery_app/data/data_sources/remote/user_remote_data_source.dart';
-import 'package:flutter_delivery_app/data/models/user/user_model.dart';
 import 'package:flutter_delivery_app/domain/entities/user/user.dart';
 import 'package:flutter_delivery_app/domain/repositories/user/user_repository.dart';
+import 'package:flutter_delivery_app/domain/usecases/user/login_use_case.dart';
+import 'package:flutter_delivery_app/domain/usecases/user/register_use_case.dart';
 import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: UserRepository)
 class UserRepositoryImpl implements UserRepository {
   final UserRemoteDataSource remote;
   final UserLocalDataSource local;
+  final NetworkInfo networkInfo;
 
-  UserRepositoryImpl(this.remote, this.local);
-
-  @override
-  Future<User> loginUser(String email, String password) async {
-    final user = await remote.loginUser(email, password);
-    await local.cacheUser(user);
-    return user;
-  }
+  UserRepositoryImpl(this.remote, this.local, this.networkInfo);
 
   @override
-  Future<User?> getUser(String id) async {
+  Future<Either<Failure, User>> getLocalUser() async {
     try {
-      return await remote.getUser(id);
-    } catch (_) {
-      return await local.getCachedUser();
+      final user = await local.getUser();
+      return Right(user);
+    } on CacheFailure {
+      return Left(CacheFailure());
     }
   }
 
   @override
-  Future<User> registerUser(User user) async {
-    final model = UserModel(
-      id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      password: user.password,
-      imageUrl: user.imageUrl,
-    );
-    final remoteUser = await remote.registerUser(model);
-    await local.cacheUser(remoteUser);
-    return remoteUser;
+  Future<Either<Failure, User>> loginUser(LoginParams params) async {
+    if (!await networkInfo.isConnected) {
+      return Left(NetworkFailure());
+    }
+
+    try {
+      final remoteResponse = await remote.loginUser(params);
+      return Right(remoteResponse.user);
+    } on Failure catch (failure) {
+      return Left(failure);
+    }
   }
 
   @override
-  Future<User> updateUser(User user) async {
-    final model = UserModel(
-      id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      password: user.password,
-      imageUrl: user.imageUrl,
-    );
-    final updated = await remote.updateUser(model);
-    await local.cacheUser(updated);
-    return updated;
+  Future<Either<Failure, User>> registerUser(RegisterParams params) async {
+    if (!await networkInfo.isConnected) {
+      return Left(NetworkFailure());
+    }
+
+    try {
+      final remoteResponse = await remote.registerUser(params);
+      return Right(remoteResponse.user);
+    } on Failure catch (failure) {
+      return Left(failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, NoParams>> logoutUser() async {
+    try {
+      await local.clearCache();
+      return Right(NoParams());
+    } on CacheFailure {
+      return Left(CacheFailure());
+    }
   }
 }

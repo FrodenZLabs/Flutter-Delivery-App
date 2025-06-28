@@ -1,3 +1,3 @@
 const String appTitle = "K-Labs Delivery Services";
 
-const String baseUrl = "";
+const String baseUrl = "http://localhost:8000";

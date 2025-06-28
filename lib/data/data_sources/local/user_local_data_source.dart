@@ -3,38 +3,63 @@ import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
 
 abstract class UserLocalDataSource {
-  Future<void> cacheUser(UserModel user);
-  Future<UserModel?> getCachedUser();
-  Future<void> clearUser();
+  Future<String> getToken();
+  Future<UserModel> getUser();
+  Future<void> saveUser(UserModel user);
+  Future<void> clearCache();
+  Future<void> saveToken(String token);
+  Future<bool> isTokenAvailable();
 }
 
 @LazySingleton(as: UserLocalDataSource)
 class HiveUserLocalDataSource implements UserLocalDataSource {
-  static const boxName = 'userBox';
-  final Box<UserModel>? testBox;
+  static const String userBoxName = 'userBox';
+  static const String tokenKey = 'token';
+  static const String userKey = 'user';
 
-  HiveUserLocalDataSource({this.testBox}); // Add optional injected box
-
-  Future<Box<UserModel>> _getBox() async {
-    if (testBox != null) return testBox!;
-    return await Hive.openBox<UserModel>(boxName);
+  @override
+  Future<void> saveToken(String token) async {
+    final box = await Hive.openBox(userBoxName);
+    await box.put(tokenKey, token);
   }
 
   @override
-  Future<void> cacheUser(UserModel user) async {
-    final box = await Hive.openBox<UserModel>(boxName);
-    await box.put('user', user);
+  Future<void> saveUser(UserModel user) async {
+    final box = await Hive.openBox(userBoxName);
+    await box.put(userKey, user);
   }
 
   @override
-  Future<UserModel?> getCachedUser() async {
-    final box = await Hive.openBox<UserModel>(boxName);
-    return box.get('user');
+  Future<String> getToken() async {
+    final box = await Hive.openBox(userBoxName);
+    final token = box.get(tokenKey);
+    if (token != null) {
+      return token;
+    } else {
+      throw Exception('Token not found');
+    }
   }
 
   @override
-  Future<void> clearUser() async {
-    final box = await Hive.openBox<UserModel>(boxName);
-    await box.delete('user');
+  Future<UserModel> getUser() async {
+    final box = await Hive.openBox(userBoxName);
+    final user = box.get(userKey);
+    if (user != null && user is UserModel) {
+      return user;
+    } else {
+      throw Exception('User not found');
+    }
+  }
+
+  @override
+  Future<bool> isTokenAvailable() async {
+    final box = await Hive.openBox(userBoxName);
+    return box.containsKey(tokenKey);
+  }
+
+  @override
+  Future<void> clearCache() async {
+    final box = await Hive.openBox(userBoxName);
+    await box.clear();
   }
 }
