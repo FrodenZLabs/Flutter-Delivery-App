@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_delivery_app/core/error/exceptions.dart';
 import 'package:flutter_delivery_app/core/error/failures.dart';
 import 'package:flutter_delivery_app/core/usecases/usecase.dart';
 import 'package:flutter_delivery_app/domain/entities/user/user.dart';
@@ -40,11 +41,18 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     try {
       final result = await _registerUseCase(event.params);
       result.fold(
-        (failure) => emit(UserLoggedFail(failure)),
-        (user) => emit(UserLogged(user)),
+        (failure) => emit(UserRegisteredFail(failure)),
+        (user) => emit(UserSuccess()),
       );
     } catch (e) {
-      emit(UserLoggedFail(ExceptionFailure()));
+      // Check for specific error types
+      if (e is ServerException) {
+        emit(UserLoggedFail(ServerFailure()));
+      } else if (e is NetworkFailure) {
+        emit(UserLoggedFail(NetworkFailure()));
+      } else {
+        emit(UserLoggedFail(ExceptionFailure()));
+      }
     }
   }
 
@@ -55,6 +63,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     emit(UserLoading());
     try {
       final result = await _loginUseCase(event.params);
+      debugPrint("Result: $result");
       result.fold(
         (failure) => emit(UserLoggedFail(failure)),
         (user) => emit(UserLogged(user)),

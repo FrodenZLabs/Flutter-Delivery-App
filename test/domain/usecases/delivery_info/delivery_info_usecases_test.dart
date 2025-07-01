@@ -1,10 +1,10 @@
 import 'package:flutter_delivery_app/domain/entities/delivery/delivery_info.dart';
-import 'package:flutter_delivery_app/domain/usecases/delivery/add_delivery_info.dart';
-import 'package:flutter_delivery_app/domain/usecases/delivery/delete_delivery_info.dart';
-import 'package:flutter_delivery_app/domain/usecases/delivery/get_all_delivery_info.dart';
-import 'package:flutter_delivery_app/domain/usecases/delivery/get_default_delivery_info.dart';
-import 'package:flutter_delivery_app/domain/usecases/delivery/set_default_delivery_info.dart';
-import 'package:flutter_delivery_app/domain/usecases/delivery/update_delivery_info.dart';
+import 'package:flutter_delivery_app/domain/usecases/delivery/add_delivery_info_use_case.dart';
+import 'package:flutter_delivery_app/domain/usecases/delivery/delete_local_delivery_info_use_case.dart';
+import 'package:flutter_delivery_app/domain/usecases/delivery/get_local_delivery_info_use_case.dart';
+import 'package:flutter_delivery_app/domain/usecases/delivery/get_remote_delivery_info_use_case.dart';
+import 'package:flutter_delivery_app/domain/usecases/delivery/get_selected_delivery_info_use_case.dart';
+import 'package:flutter_delivery_app/domain/usecases/delivery/select_delivery_info_use_case.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 

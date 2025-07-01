@@ -1,39 +1,71 @@
 part of 'service_bloc.dart';
 
 abstract class ServiceState extends Equatable {
-  const ServiceState();
+  final List<Service> services;
+  final PaginationMetaData metaData;
+  final FilterServiceParams params;
+
+  const ServiceState({
+    required this.services,
+    required this.metaData,
+    required this.params,
+  });
+}
+
+final class ServiceInitial extends ServiceState {
+  const ServiceInitial({
+    required super.services,
+    required super.params,
+    required super.metaData,
+  });
 
   @override
   List<Object?> get props => [];
 }
 
-final class ServiceInitial extends ServiceState {}
-
-class ServiceLoading extends ServiceState {}
-
-class ServiceLoaded extends ServiceState {
-  final List<Service> services;
-
-  const ServiceLoaded(this.services);
+class ServiceLoading extends ServiceState {
+  const ServiceLoading({
+    required super.services,
+    required super.params,
+    required super.metaData,
+  });
 
   @override
-  List<Object> get props => [services];
+  List<Object?> get props => [];
 }
 
-class ServiceDetailLoaded extends ServiceState {
-  final Service service;
-
-  const ServiceDetailLoaded(this.service);
+class ServiceLoaded extends ServiceState {
+  const ServiceLoaded({
+    required super.services,
+    required super.params,
+    required super.metaData,
+  });
 
   @override
-  List<Object> get props => [service];
+  List<Object?> get props => [services];
+}
+
+class ServiceEmpty extends ServiceState {
+  const ServiceEmpty({
+    required super.services,
+    required super.params,
+    required super.metaData,
+  });
+
+  @override
+  List<Object?> get props => [];
 }
 
 class ServiceError extends ServiceState {
-  final String message;
+  final Failure failure;
 
-  const ServiceError(this.message);
+  const ServiceError({
+    required super.services,
+    required super.params,
+    required this.failure,
+    required super.metaData,
+  });
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [];
 }

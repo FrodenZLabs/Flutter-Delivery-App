@@ -1,7 +1,26 @@
+import 'dart:convert';
+
 import 'package:flutter_delivery_app/domain/entities/service/service.dart';
 import 'package:hive/hive.dart';
 
 part 'service_model.g.dart';
+
+// ✅ Single ServiceModel from JSON string (for one service, if needed)
+ServiceModel serviceModelFromJson(String str) =>
+    ServiceModel.fromJson(json.decode(str));
+
+// ✅ Single ServiceModel to JSON string
+String serviceModelToJson(ServiceModel data) => json.encode(data.toJson());
+
+// ✅ List<ServiceModel> from JSON string (when backend returns list like your /services endpoint)
+List<ServiceModel> serviceModelListFromJson(String str) =>
+    List<ServiceModel>.from(
+      json.decode(str)['data'].map((x) => ServiceModel.fromJson(x)),
+    );
+
+// ✅ Convert List<ServiceModel> to JSON string (if you ever want to cache/save locally)
+String serviceModelListToJson(List<ServiceModel> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 @HiveType(typeId: 0)
 class ServiceModel extends Service {

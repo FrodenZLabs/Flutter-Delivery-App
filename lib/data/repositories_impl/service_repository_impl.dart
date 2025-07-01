@@ -1,55 +1,52 @@
-import 'package:collection/collection.dart';
+import 'package:dartz/dartz.dart';
+import 'package:flutter_delivery_app/core/error/exceptions.dart';
+import 'package:flutter_delivery_app/core/error/failures.dart';
+import 'package:flutter_delivery_app/core/network/network_info.dart';
 import 'package:flutter_delivery_app/data/data_sources/local/service_local_data_source.dart';
 import 'package:flutter_delivery_app/data/data_sources/remote/service_remote_data_source.dart';
-import 'package:flutter_delivery_app/domain/entities/service/service.dart';
+import 'package:flutter_delivery_app/domain/entities/service/service_response.dart';
 import 'package:flutter_delivery_app/domain/repositories/service/service_repository.dart';
+import 'package:flutter_delivery_app/domain/usecases/service/get_service_use_case.dart';
 import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: ServiceRepository)
 class ServiceRepositoryImpl implements ServiceRepository {
   final ServiceRemoteDataSource remoteDataSource;
   final ServiceLocalDataSource localDataSource;
+  final NetworkInfo networkInfo;
 
   ServiceRepositoryImpl({
     required this.remoteDataSource,
     required this.localDataSource,
+    required this.networkInfo,
   });
 
   @override
-  Future<List<Service>> getAllServices() async {
+  Future<Either<Failure, ServiceResponse>> getLocalServices(
+    FilterServiceParams params,
+  ) async {
     try {
-      final remoteServices = await remoteDataSource.fetchRemoteServices();
-      await localDataSource.cacheServices(remoteServices);
-      return remoteServices;
-    } catch (e) {
-      return await localDataSource.getCachedServices();
+      final localServices = await localDataSource.getCachedServices();
+      return Right(localServices);
+    } on ServerException {
+      return Left(CacheFailure());
     }
   }
 
   @override
-  Future<Service?> getServiceById(String id) async {
-    try {
-      final remote = await remoteDataSource.fetchServiceById(id);
-      return remote;
-    } catch (_) {
-      final local = await localDataSource.getCachedServices();
-      return local.firstWhereOrNull((s) => s.id == id);
+  Future<Either<Failure, ServiceResponse>> getRemoteServices(
+    FilterServiceParams params,
+  ) async {
+    if (!await networkInfo.isConnected) {
+      return Left(NetworkFailure());
     }
-  }
 
-  @override
-  Future<List<Service>> searchServices(String keyword) async {
     try {
-      return await remoteDataSource.searchServices(keyword);
-    } catch (_) {
-      final local = await localDataSource.getCachedServices();
-      return local
-          .where(
-            (s) =>
-                s.name.toLowerCase().contains(keyword.toLowerCase()) ||
-                s.subName.toLowerCase().contains(keyword.toLowerCase()),
-          )
-          .toList();
+      final remoteServices = await remoteDataSource.getServices(params);
+      localDataSource.cacheServices(remoteServices);
+      return Right(remoteServices);
+    } on ServerException {
+      return Left(ServerFailure());
     }
   }
 }

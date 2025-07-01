@@ -29,15 +29,17 @@ class MainView extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 children: pages,
               ),
+
+              // ✅ Bottom Nav Bar floating above
               Positioned(
                 bottom: 10,
                 left: 18,
                 right: 18,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 0, right: 0),
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
                   child: StylishBottomBar(
                     option: DotBarOptions(dotStyle: DotStyle.tile),
-                    borderRadius: BorderRadius.all(Radius.circular(48)),
+                    borderRadius: const BorderRadius.all(Radius.circular(48)),
                     currentIndex: state,
                     onTap: (index) {
                       context.read<NavbarCubit>().update(index);

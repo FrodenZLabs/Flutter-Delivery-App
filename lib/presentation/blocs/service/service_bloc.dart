@@ -1,9 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_delivery_app/core/error/failures.dart';
+import 'package:flutter_delivery_app/domain/entities/service/pagination_meta_data.dart';
 import 'package:flutter_delivery_app/domain/entities/service/service.dart';
-import 'package:flutter_delivery_app/domain/usecases/service/get_all_services.dart';
-import 'package:flutter_delivery_app/domain/usecases/service/get_service_by_id.dart';
-import 'package:flutter_delivery_app/domain/usecases/service/search_services.dart';
+import 'package:flutter_delivery_app/domain/usecases/service/get_service_use_case.dart';
 import 'package:injectable/injectable.dart';
 
 part 'service_event.dart';
@@ -11,60 +12,116 @@ part 'service_state.dart';
 
 @injectable
 class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
-  final GetAllServices getAllServices;
-  final GetServiceById getServiceById;
-  final SearchServices searchServices;
+  final GetServiceUseCase _getServiceUseCase;
 
-  ServiceBloc({
-    required this.getAllServices,
-    required this.getServiceById,
-    required this.searchServices,
-  }) : super(ServiceInitial()) {
+  ServiceBloc(this._getServiceUseCase)
+    : super(
+        ServiceInitial(
+          services: const [],
+          params: const FilterServiceParams(),
+          metaData: PaginationMetaData(limit: 0, pageSize: 20, total: 0),
+        ),
+      ) {
     on<LoadAllServices>(_onLoadAllServices);
-    on<LoadGetServiceById>(_onGetServiceById);
-    on<LoadSearchServices>(_onSearchServices);
+    on<LoadMoreServices>(_onLoadMoreServices);
   }
 
-  Future<void> _onLoadAllServices(
+  void _onLoadAllServices(
     LoadAllServices event,
     Emitter<ServiceState> emit,
   ) async {
-    emit(ServiceLoading());
     try {
-      final services = await getAllServices();
-      emit(ServiceLoaded(services));
+      emit(
+        ServiceLoading(
+          services: const [],
+          params: event.params,
+          metaData: state.metaData,
+        ),
+      );
+      final result = await _getServiceUseCase(event.params);
+      debugPrint("Result: $result");
+
+      result.fold(
+        (failure) => emit(
+          ServiceError(
+            services: state.services,
+            params: event.params,
+            failure: failure,
+            metaData: state.metaData,
+          ),
+        ),
+        (serviceResponse) => emit(
+          ServiceLoaded(
+            services: serviceResponse.service,
+            params: event.params,
+            metaData: serviceResponse.paginationMetaData,
+          ),
+        ),
+      );
     } catch (e) {
-      emit(ServiceError('Failed to load services'));
+      emit(
+        ServiceError(
+          services: state.services,
+          params: state.params,
+          failure: ExceptionFailure(),
+          metaData: state.metaData,
+        ),
+      );
     }
   }
 
-  Future<void> _onGetServiceById(
-    LoadGetServiceById event,
+  void _onLoadMoreServices(
+    LoadMoreServices event,
     Emitter<ServiceState> emit,
   ) async {
-    emit(ServiceLoading());
-    try {
-      final service = await getServiceById(event.id);
-      if (service != null) {
-        emit(ServiceDetailLoaded(service));
-      } else {
-        emit(ServiceError('Service not found'));
+    var state = this.state;
+    var limit = state.metaData.limit;
+    var total = state.metaData.total;
+    var loadedServicesLength = state.services.length;
+
+    if (state is ServiceLoaded && (loadedServicesLength < total)) {
+      try {
+        emit(
+          ServiceLoading(
+            services: state.services,
+            params: state.params,
+            metaData: state.metaData,
+          ),
+        );
+        final result = await _getServiceUseCase(
+          FilterServiceParams(limit: limit + 10),
+        );
+        result.fold(
+          (failure) => emit(
+            ServiceError(
+              services: state.services,
+              metaData: state.metaData,
+              params: state.params,
+              failure: failure,
+            ),
+          ),
+          (serviceResponse) {
+            List<Service> services = state.services;
+            services.addAll(serviceResponse.service);
+            emit(
+              ServiceLoaded(
+                services: services,
+                metaData: state.metaData,
+                params: state.params,
+              ),
+            );
+          },
+        );
+      } catch (e) {
+        emit(
+          ServiceError(
+            services: state.services,
+            metaData: state.metaData,
+            params: state.params,
+            failure: ExceptionFailure(),
+          ),
+        );
       }
-    } catch (e) {
-      emit(ServiceError('Failed to load service'));
-    }
-  }
-
-  Future<void> _onSearchServices(
-    LoadSearchServices event,
-    Emitter<ServiceState> emit,
-  ) async {
-    emit(ServiceLoading());
-    try {
-      final services = await searchServices(event.query);
-      emit(ServiceLoaded(services));
-    } catch (e) {
-      emit(ServiceError('Search failed'));
     }
   }
 }

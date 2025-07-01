@@ -1,10 +1,23 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
+import 'package:flutter_delivery_app/core/router/app_router.dart';
 import 'package:flutter_delivery_app/domain/entities/service/service.dart';
+import 'package:flutter_delivery_app/presentation/widgets/input_form_button.dart';
+import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
-class ServiceDetailsView extends StatelessWidget {
-  const ServiceDetailsView({super.key});
+class ServiceDetailsView extends StatefulWidget {
+  final Service service;
 
+  const ServiceDetailsView({super.key, required this.service});
+
+  @override
+  State<ServiceDetailsView> createState() => _ServiceDetailsViewState();
+}
+
+class _ServiceDetailsViewState extends State<ServiceDetailsView> {
+  final NumberFormat currencyFormat = NumberFormat('#,##0');
   // Dummy Service Data for testing
   final Service dummyService = const Service(
     id: '1',
@@ -34,10 +47,14 @@ class ServiceDetailsView extends StatelessWidget {
         ),
         elevation: 0,
         title: Text(
-          dummyService.name,
+          widget.service.name,
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
         ),
         backgroundColor: kBackgroundColor,
+        actions: [
+          IconButton(onPressed: () {}, icon: Icon(Icons.message)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.share)),
+        ],
       ),
       backgroundColor: kBackgroundColor,
       body: SingleChildScrollView(
@@ -48,7 +65,17 @@ class ServiceDetailsView extends StatelessWidget {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.3,
               width: double.infinity,
-              child: Image.asset(dummyService.imageUrl, fit: BoxFit.cover),
+              child: CachedNetworkImage(
+                imageUrl: widget.service.imageUrl,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: Colors.grey.shade100,
+                  highlightColor: Colors.white,
+                  child: Container(color: Colors.grey.shade300),
+                ),
+                errorWidget: (context, url, error) =>
+                    const Center(child: Icon(Icons.error)),
+              ),
             ),
 
             const SizedBox(height: 16),
@@ -60,7 +87,7 @@ class ServiceDetailsView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    dummyService.name,
+                    widget.service.name,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -68,7 +95,7 @@ class ServiceDetailsView extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    dummyService.subName,
+                    widget.service.subName,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w300,
@@ -85,7 +112,7 @@ class ServiceDetailsView extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                dummyService.description,
+                widget.service.description,
                 style: const TextStyle(fontSize: 15),
               ),
             ),
@@ -104,11 +131,11 @@ class ServiceDetailsView extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Base Fee: Ksh ${dummyService.baseFee.toStringAsFixed(0)}',
+                    'Base Fee: Ksh ${currencyFormat.format(widget.service.baseFee)}',
                     style: const TextStyle(fontSize: 15),
                   ),
                   Text(
-                    'Price per Km: Ksh ${dummyService.perKmFee.toStringAsFixed(0)}',
+                    'Price per Km: Ksh ${currencyFormat.format(widget.service.perKmFee)}',
                     style: const TextStyle(fontSize: 15),
                   ),
                 ],
@@ -137,7 +164,7 @@ class ServiceDetailsView extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        '${dummyService.openTime} - ${dummyService.closeTime}',
+                        '${widget.service.openTime} - ${widget.service.closeTime}',
                         style: const TextStyle(fontSize: 15),
                       ),
                     ],
@@ -146,13 +173,13 @@ class ServiceDetailsView extends StatelessWidget {
                   Row(
                     children: [
                       const Icon(
-                        Icons.calendar_today,
+                        Icons.calendar_month,
                         size: 18,
                         color: Colors.brown,
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        '${dummyService.openDay} - ${dummyService.closeDay}',
+                        '${widget.service.openDay} - ${widget.service.closeDay}',
                         style: const TextStyle(fontSize: 15),
                       ),
                     ],
@@ -161,19 +188,21 @@ class ServiceDetailsView extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        dummyService.available
+                        widget.service.available
                             ? Icons.check_circle
                             : Icons.cancel,
-                        color: dummyService.available
+                        color: widget.service.available
                             ? Colors.green
                             : Colors.red,
                         size: 20,
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        dummyService.available ? 'Available' : 'Not Available',
+                        widget.service.available
+                            ? 'Available'
+                            : 'Not Available',
                         style: TextStyle(
-                          color: dummyService.available
+                          color: widget.service.available
                               ? Colors.green
                               : Colors.red,
                           fontSize: 16,
@@ -193,21 +222,13 @@ class ServiceDetailsView extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kSecondaryColor,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () {
-                    // TODO: Navigate to Booking Page
+                child: InputFormButton(
+                  onClick: () {
+                    Navigator.of(
+                      context,
+                    ).pushNamed(AppRouter.schedule, arguments: widget.service);
                   },
-                  child: const Text(
-                    'Book Delivery',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
+                  titleText: 'Book Delivery',
                 ),
               ),
             ),

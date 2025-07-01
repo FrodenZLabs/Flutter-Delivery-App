@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
+import 'package:flutter_delivery_app/core/constants/images.dart';
 
 class PaymentMethodView extends StatefulWidget {
   const PaymentMethodView({super.key});
@@ -14,11 +15,10 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
   final List<Map<String, dynamic>> paymentMethods = [
     {
       'name': 'Mastercard/Visa Card',
-      'image':
-          'assets/images/mastercard.jpeg', // ✅ Replace with your actual image paths
+      'image': kMastercard, // ✅ Replace with your actual image paths
     },
-    {'name': 'M-pesa', 'image': 'assets/images/mpesa.png'},
-    {'name': 'Paypal', 'image': 'assets/images/paypal.png'},
+    {'name': 'M-pesa', 'image': kMpesa},
+    {'name': 'Paypal', 'image': kPaypal},
   ];
 
   void selectMethod(String method) {

@@ -21,9 +21,22 @@ final class UserLogged extends UserState {
   List<Object> get props => [user];
 }
 
+final class UserSuccess extends UserState {
+  @override
+  List<Object> get props => [];
+}
+
 final class UserLoggedFail extends UserState {
   final Failure failure;
   UserLoggedFail(this.failure);
+
+  @override
+  List<Object> get props => [];
+}
+
+final class UserRegisteredFail extends UserState {
+  final Failure failure;
+  UserRegisteredFail(this.failure);
 
   @override
   List<Object> get props => [];

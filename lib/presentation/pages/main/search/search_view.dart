@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
+import 'package:flutter_delivery_app/core/constants/images.dart';
+import 'package:flutter_delivery_app/core/error/failures.dart';
+import 'package:flutter_delivery_app/domain/usecases/service/get_service_use_case.dart';
+import 'package:flutter_delivery_app/presentation/blocs/filter/filter_cubit.dart';
+import 'package:flutter_delivery_app/presentation/blocs/service/service_bloc.dart';
+import 'package:flutter_delivery_app/presentation/widgets/alert_card.dart';
+import 'package:flutter_delivery_app/presentation/widgets/service_card.dart';
+import 'package:shimmer/shimmer.dart';
 
 class SearchView extends StatefulWidget {
   const SearchView({super.key});
@@ -11,97 +20,80 @@ class SearchView extends StatefulWidget {
 class _SearchViewState extends State<SearchView> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  String selectedFilter = 'All';
+  ServiceSortOrder selectedSort = ServiceSortOrder.all;
+
   double _scrollProgress = 0.0;
 
-  List<Map<String, dynamic>> allServices = [
-    {
-      'title': 'Tailoring',
-      'price': 100,
-      'popularity': 5,
-      'image': 'assets/images/tailoring.png',
-      'subtitle': 'Custom tailoring and alterations',
-    },
-    {
-      'title': 'Grocery Delivery',
-      'price': 80,
-      'popularity': 4,
-      'image': 'assets/images/shoe-repair.png',
-      'subtitle': 'Professional shoe repair',
-    },
-    {
-      'title': 'Laundry Service',
-      'price': 150,
-      'popularity': 3,
-      'image': 'assets/images/laundry.png',
-      'subtitle': 'Same-day pickup and delivery',
-    },
-    {
-      'title': 'Parcel Pickup',
-      'price': 70,
-      'popularity': 2,
-      'image': 'assets/images/tailoring.png',
-      'subtitle': 'Custom tailoring and alterations',
-    },
-    {
-      'title': 'Dry Cleaning',
-      'price': 60,
-      'popularity': 1,
-      'image': 'assets/images/dry-cleaning.png',
-      'subtitle': 'Expert dry cleaning services',
-    },
-  ];
+  void _scrollListener() {
+    double maxScroll = _scrollController.position.maxScrollExtent;
+    double currentScroll = _scrollController.position.pixels;
+    double scrollPercentage = 0.7;
 
-  List<Map<String, dynamic>> filteredServices = [];
+    setState(() {
+      _scrollProgress = (currentScroll / maxScroll).clamp(0.0, 1.0);
+    });
 
-  String selectedFilter = 'Popular';
+    if (currentScroll > (maxScroll * scrollPercentage)) {
+      if (context.read<ServiceBloc>().state is ServiceLoaded) {
+        context.read<ServiceBloc>().add(const LoadMoreServices());
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    filteredServices = List.from(allServices);
-    applyFilter();
+    _scrollController.addListener(_scrollListener);
 
-    _scrollController.addListener(() {
-      final maxScroll = _scrollController.position.maxScrollExtent;
-      final currentScroll = _scrollController.offset;
-      setState(() {
-        _scrollProgress = maxScroll == 0
-            ? 0
-            : (currentScroll / maxScroll).clamp(0.0, 1.0);
-      });
-    });
+    // ✅ Trigger service load when page first opens
+    context.read<ServiceBloc>().add(LoadAllServices(FilterServiceParams()));
   }
 
-  void applyFilter() {
-    List<Map<String, dynamic>> tempList = List.from(allServices);
-
-    if (selectedFilter == 'Popular') {
-      tempList.sort((a, b) => b['popularity'].compareTo(a['popularity']));
-    } else if (selectedFilter == 'A-Z') {
-      tempList.sort((a, b) => a['title'].compareTo(b['title']));
-    } else if (selectedFilter == 'Z-A') {
-      tempList.sort((a, b) => b['title'].compareTo(a['title']));
-    } else if (selectedFilter == 'Price Low-High') {
-      tempList.sort((a, b) => a['price'].compareTo(b['price']));
-    } else if (selectedFilter == 'Price High-Low') {
-      tempList.sort((a, b) => b['price'].compareTo(a['price']));
+  ServiceSortOrder mapFilterToSort(String filter) {
+    switch (filter) {
+      case 'Price Low-High':
+        return ServiceSortOrder.priceLow;
+      case 'Price High-Low':
+        return ServiceSortOrder.priceHigh;
+      case 'A-Z':
+        return ServiceSortOrder.aToZ;
+      case 'Z-A':
+        return ServiceSortOrder.zToA;
+      default:
+        return ServiceSortOrder.all;
     }
-
-    setState(() {
-      filteredServices = tempList
-          .where(
-            (service) => service['title'].toLowerCase().contains(
-              _searchController.text.toLowerCase(),
-            ),
-          )
-          .toList();
-    });
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
+  Widget filterButton(String title) {
+    final isSelected = selectedFilter == title;
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: ChoiceChip(
+        label: Text(title),
+        backgroundColor: Colors.brown.shade300,
+        selectedColor: Colors.brown.shade500,
+        checkmarkColor: Colors.white,
+        labelStyle: const TextStyle(color: Colors.white),
+        selected: isSelected,
+        onSelected: (selected) {
+          setState(() {
+            selectedFilter = title;
+            selectedSort = mapFilterToSort(title);
+          });
+
+          context.read<ServiceBloc>().add(
+            LoadAllServices(
+              FilterServiceParams(
+                keyword: _searchController.text,
+                sort: selectedSort,
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -109,7 +101,7 @@ class _SearchViewState extends State<SearchView> {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.only(top: 16, right: 16, left: 16),
         child: Column(
           children: [
             const SizedBox(height: 25),
@@ -123,7 +115,11 @@ class _SearchViewState extends State<SearchView> {
                   icon: const Icon(Icons.clear),
                   onPressed: () {
                     _searchController.clear();
-                    applyFilter();
+                    context.read<ServiceBloc>().add(
+                      LoadAllServices(
+                        FilterServiceParams(keyword: '', sort: selectedSort),
+                      ),
+                    );
                   },
                 ),
                 border: OutlineInputBorder(
@@ -131,7 +127,11 @@ class _SearchViewState extends State<SearchView> {
                 ),
               ),
               onChanged: (value) {
-                applyFilter();
+                context.read<ServiceBloc>().add(
+                  LoadAllServices(
+                    FilterServiceParams(keyword: value, sort: selectedSort),
+                  ),
+                );
               },
             ),
 
@@ -142,11 +142,10 @@ class _SearchViewState extends State<SearchView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SingleChildScrollView(
-                  controller: _scrollController,
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      filterButton('Popular'),
+                      filterButton('All'),
                       filterButton('Price Low-High'),
                       filterButton('Price High-Low'),
                       filterButton('A-Z'),
@@ -163,89 +162,119 @@ class _SearchViewState extends State<SearchView> {
                 ),
               ],
             ),
-
             const SizedBox(height: 16),
-
             Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.8, // Adjust height/width ratio
-                ),
-                itemCount: filteredServices.length,
-                itemBuilder: (context, index) {
-                  final service = filteredServices[index];
-                  return GestureDetector(
-                    onTap: () {
-                      // TODO: Navigate to service details
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+              child: BlocBuilder<ServiceBloc, ServiceState>(
+                builder: (context, state) {
+                  if (state is ServiceLoaded && state.services.isEmpty) {
+                    return AlertCard(
+                      image: kEmpty,
+                      message: "Services not found",
+                    );
+                  }
+
+                  if (state is ServiceError && state.services.isEmpty) {
+                    if (state.failure is NetworkFailure) {
+                      return AlertCard(
+                        image: kNoConnection,
+                        message: "Network failure\n Try again",
+                        onClick: () {
+                          context.read<ServiceBloc>().add(
+                            LoadAllServices(
+                              FilterServiceParams(
+                                keyword: context
+                                    .read<FilterServiceCubit>()
+                                    .searchController
+                                    .text,
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }
+                    return Center(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.asset(
-                              service['image'],
-                              height: 140,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
+                          if (state.failure is ServerFailure)
+                            Image.asset(
+                              kInternalServerError,
+                              width: MediaQuery.of(context).size.width * 0.7,
                             ),
-                          ),
-                          const SizedBox(height: 8),
+                          if (state.failure is CacheFailure)
+                            Image.asset(
+                              kNoConnection,
+                              width: MediaQuery.of(context).size.width * 0.7,
+                            ),
                           Text(
-                            service['title'],
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                            textAlign: TextAlign.start,
+                            "Services not found",
+                            style: TextStyle(color: Colors.grey.shade600),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            service['subtitle'],
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.brown,
-                            ),
-                            textAlign: TextAlign.start,
+                          IconButton(
+                            onPressed: () {
+                              context.read<ServiceBloc>().add(
+                                LoadAllServices(
+                                  FilterServiceParams(
+                                    keyword: context
+                                        .read<FilterServiceCubit>()
+                                        .searchController
+                                        .text,
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.refresh),
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.1,
                           ),
                         ],
                       ),
+                    );
+                  }
+
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      context.read<ServiceBloc>().add(
+                        LoadAllServices(FilterServiceParams()),
+                      );
+                    },
+                    child: GridView.builder(
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).padding.bottom + 80,
+                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 0.8, // Adjust height/width ratio
+                          ),
+                      controller: _scrollController,
+                      itemCount:
+                          state.services.length +
+                          ((state is ServiceLoading) ? 10 : 0),
+                      shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        if (state.services.length > index) {
+                          return ServiceCard(service: state.services[index]);
+                        } else {
+                          return Shimmer.fromColors(
+                            baseColor: Colors.grey.shade100,
+                            highlightColor: Colors.white,
+                            child: const ServiceCard(),
+                          );
+                        }
+                      },
                     ),
                   );
                 },
               ),
             ),
-            const SizedBox(height: 60),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget filterButton(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: ChoiceChip(
-        label: Text(title),
-        backgroundColor: Colors.brown.shade300,
-        selectedColor: Colors.brown.shade500,
-        checkmarkColor: Colors.white,
-        labelStyle: TextStyle(color: Colors.white),
-        selected: selectedFilter == title,
-        onSelected: (selected) {
-          setState(() {
-            selectedFilter = title;
-            applyFilter();
-          });
-        },
       ),
     );
   }

@@ -50,7 +50,7 @@ class UserRepositoryImpl implements UserRepository {
 
     try {
       final remoteResponse = await remote.registerUser(params);
-      return Right(remoteResponse.user);
+      return Right(remoteResponse);
     } on Failure catch (failure) {
       return Left(failure);
     }

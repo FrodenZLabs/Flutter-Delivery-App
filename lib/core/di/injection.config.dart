@@ -56,18 +56,20 @@ import 'package:flutter_delivery_app/domain/repositories/service/service_reposit
     as _i591;
 import 'package:flutter_delivery_app/domain/repositories/user/user_repository.dart'
     as _i14;
-import 'package:flutter_delivery_app/domain/usecases/delivery/add_delivery_info.dart'
-    as _i281;
-import 'package:flutter_delivery_app/domain/usecases/delivery/delete_delivery_info.dart'
-    as _i233;
-import 'package:flutter_delivery_app/domain/usecases/delivery/get_all_delivery_info.dart'
-    as _i515;
-import 'package:flutter_delivery_app/domain/usecases/delivery/get_default_delivery_info.dart'
-    as _i525;
-import 'package:flutter_delivery_app/domain/usecases/delivery/set_default_delivery_info.dart'
-    as _i289;
-import 'package:flutter_delivery_app/domain/usecases/delivery/update_delivery_info.dart'
-    as _i537;
+import 'package:flutter_delivery_app/domain/usecases/delivery/add_delivery_info_use_case.dart'
+    as _i904;
+import 'package:flutter_delivery_app/domain/usecases/delivery/delete_local_delivery_info_use_case.dart'
+    as _i293;
+import 'package:flutter_delivery_app/domain/usecases/delivery/edit_delivery_info_use_case.dart'
+    as _i818;
+import 'package:flutter_delivery_app/domain/usecases/delivery/get_local_delivery_info_use_case.dart'
+    as _i1008;
+import 'package:flutter_delivery_app/domain/usecases/delivery/get_remote_delivery_info_use_case.dart'
+    as _i723;
+import 'package:flutter_delivery_app/domain/usecases/delivery/get_selected_delivery_info_use_case.dart'
+    as _i1016;
+import 'package:flutter_delivery_app/domain/usecases/delivery/select_delivery_info_use_case.dart'
+    as _i298;
 import 'package:flutter_delivery_app/domain/usecases/driver/get_driver_by_id.dart'
     as _i436;
 import 'package:flutter_delivery_app/domain/usecases/driver/get_drivers_by_service_id.dart'
@@ -86,12 +88,8 @@ import 'package:flutter_delivery_app/domain/usecases/schedule/get_schedules_by_u
     as _i875;
 import 'package:flutter_delivery_app/domain/usecases/schedule/update_schedule.dart'
     as _i108;
-import 'package:flutter_delivery_app/domain/usecases/service/get_all_services.dart'
-    as _i8;
-import 'package:flutter_delivery_app/domain/usecases/service/get_service_by_id.dart'
-    as _i276;
-import 'package:flutter_delivery_app/domain/usecases/service/search_services.dart'
-    as _i85;
+import 'package:flutter_delivery_app/domain/usecases/service/get_service_use_case.dart'
+    as _i327;
 import 'package:flutter_delivery_app/domain/usecases/user/get_local_user_use_case.dart'
     as _i64;
 import 'package:flutter_delivery_app/domain/usecases/user/login_use_case.dart'
@@ -100,10 +98,14 @@ import 'package:flutter_delivery_app/domain/usecases/user/logout_use_case.dart'
     as _i721;
 import 'package:flutter_delivery_app/domain/usecases/user/register_use_case.dart'
     as _i728;
-import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_bloc.dart'
-    as _i606;
+import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_action/delivery_info_action_cubit.dart'
+    as _i448;
+import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_fetch/delivery_info_fetch_cubit.dart'
+    as _i346;
 import 'package:flutter_delivery_app/presentation/blocs/driver/driver_bloc.dart'
     as _i289;
+import 'package:flutter_delivery_app/presentation/blocs/filter/filter_cubit.dart'
+    as _i669;
 import 'package:flutter_delivery_app/presentation/blocs/home/navbar_cubit.dart'
     as _i860;
 import 'package:flutter_delivery_app/presentation/blocs/rating/rating_bloc.dart'
@@ -137,6 +139,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => dIModule.serviceBox,
       preResolve: true,
     );
+    gh.factory<_i669.FilterServiceCubit>(() => _i669.FilterServiceCubit());
     gh.factory<_i860.NavbarCubit>(() => _i860.NavbarCubit());
     gh.lazySingleton<_i519.Client>(() => dIModule.httpClient);
     gh.lazySingleton<_i973.InternetConnectionChecker>(
@@ -154,11 +157,8 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i519.Client>(),
               gh<_i943.UserLocalDataSource>(),
             ));
-    gh.lazySingleton<_i596.DeliveryInfoRemoteDataSource>(
-        () => _i596.HttpDeliveryInfoRemoteDataSource(
-              gh<_i519.Client>(),
-              gh<_i191.DeliveryInfoLocalDataSource>(),
-            ));
+    gh.lazySingleton<_i596.DeliveryInfoRemoteDataSource>(() =>
+        _i596.HttpDeliveryInfoRemoteDataSource(client: gh<_i519.Client>()));
     gh.lazySingleton<_i423.NetworkInfo>(
         () => _i423.NetworkInfoImpl(gh<_i973.InternetConnectionChecker>()));
     gh.lazySingleton<_i407.RatingRemoteDataSource>(
@@ -205,31 +205,40 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i74.DeliveryInfoRepositoryImpl(
               gh<_i596.DeliveryInfoRemoteDataSource>(),
               gh<_i191.DeliveryInfoLocalDataSource>(),
+              gh<_i423.NetworkInfo>(),
+              gh<_i943.UserLocalDataSource>(),
             ));
-    gh.lazySingleton<_i56.RatingRepository>(
-        () => _i653.RatingRepositoryImpl(gh<_i407.RatingRemoteDataSource>()));
     gh.lazySingleton<_i591.ServiceRepository>(() => _i762.ServiceRepositoryImpl(
           remoteDataSource: gh<_i1047.ServiceRemoteDataSource>(),
           localDataSource: gh<_i1064.ServiceLocalDataSource>(),
+          networkInfo: gh<_i423.NetworkInfo>(),
         ));
+    gh.lazySingleton<_i327.GetServiceUseCase>(
+        () => _i327.GetServiceUseCase(gh<_i591.ServiceRepository>()));
+    gh.lazySingleton<_i56.RatingRepository>(
+        () => _i653.RatingRepositoryImpl(gh<_i407.RatingRemoteDataSource>()));
     gh.lazySingleton<_i714.GetDriversByServiceId>(
         () => _i714.GetDriversByServiceId(gh<_i16.DriverRepository>()));
     gh.lazySingleton<_i436.GetDriverById>(
         () => _i436.GetDriverById(gh<_i16.DriverRepository>()));
     gh.factory<_i289.DriverBloc>(
         () => _i289.DriverBloc(gh<_i16.DriverRepository>()));
-    gh.lazySingleton<_i281.AddDeliveryInfo>(
-        () => _i281.AddDeliveryInfo(gh<_i993.DeliveryInfoRepository>()));
-    gh.lazySingleton<_i233.DeleteDeliveryInfo>(
-        () => _i233.DeleteDeliveryInfo(gh<_i993.DeliveryInfoRepository>()));
-    gh.lazySingleton<_i515.GetAllDeliveryInfo>(
-        () => _i515.GetAllDeliveryInfo(gh<_i993.DeliveryInfoRepository>()));
-    gh.lazySingleton<_i525.GetDefaultDeliveryInfo>(
-        () => _i525.GetDefaultDeliveryInfo(gh<_i993.DeliveryInfoRepository>()));
-    gh.lazySingleton<_i289.SetDefaultDeliveryInfo>(
-        () => _i289.SetDefaultDeliveryInfo(gh<_i993.DeliveryInfoRepository>()));
-    gh.lazySingleton<_i537.UpdateDeliveryInfo>(
-        () => _i537.UpdateDeliveryInfo(gh<_i993.DeliveryInfoRepository>()));
+    gh.lazySingleton<_i904.AddDeliveryInfoUseCase>(
+        () => _i904.AddDeliveryInfoUseCase(gh<_i993.DeliveryInfoRepository>()));
+    gh.lazySingleton<_i293.DeleteLocalDeliveryInfoUseCase>(() =>
+        _i293.DeleteLocalDeliveryInfoUseCase(
+            gh<_i993.DeliveryInfoRepository>()));
+    gh.lazySingleton<_i818.EditDeliveryInfoUseCase>(() =>
+        _i818.EditDeliveryInfoUseCase(gh<_i993.DeliveryInfoRepository>()));
+    gh.lazySingleton<_i1008.GetLocalDeliveryInfoUseCase>(() =>
+        _i1008.GetLocalDeliveryInfoUseCase(gh<_i993.DeliveryInfoRepository>()));
+    gh.lazySingleton<_i723.GetRemoteDeliveryInfoUseCase>(() =>
+        _i723.GetRemoteDeliveryInfoUseCase(gh<_i993.DeliveryInfoRepository>()));
+    gh.lazySingleton<_i1016.GetSelectedDeliveryInfoUseCase>(() =>
+        _i1016.GetSelectedDeliveryInfoUseCase(
+            gh<_i993.DeliveryInfoRepository>()));
+    gh.lazySingleton<_i298.SelectDeliveryInfoUseCase>(() =>
+        _i298.SelectDeliveryInfoUseCase(gh<_i993.DeliveryInfoRepository>()));
     gh.lazySingleton<_i64.GetLocalUserUseCase>(
         () => _i64.GetLocalUserUseCase(gh<_i14.UserRepository>()));
     gh.lazySingleton<_i321.LoginUseCase>(
@@ -238,38 +247,33 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i721.LogoutUseCase(gh<_i14.UserRepository>()));
     gh.lazySingleton<_i728.RegisterUseCase>(
         () => _i728.RegisterUseCase(gh<_i14.UserRepository>()));
+    gh.factory<_i346.DeliveryInfoFetchCubit>(() => _i346.DeliveryInfoFetchCubit(
+          gh<_i723.GetRemoteDeliveryInfoUseCase>(),
+          gh<_i1008.GetLocalDeliveryInfoUseCase>(),
+          gh<_i1016.GetSelectedDeliveryInfoUseCase>(),
+          gh<_i293.DeleteLocalDeliveryInfoUseCase>(),
+        ));
     gh.lazySingleton<_i345.AddRating>(
         () => _i345.AddRating(gh<_i56.RatingRepository>()));
     gh.lazySingleton<_i207.GetRatingsByUser>(
         () => _i207.GetRatingsByUser(gh<_i56.RatingRepository>()));
-    gh.lazySingleton<_i8.GetAllServices>(
-        () => _i8.GetAllServices(gh<_i591.ServiceRepository>()));
-    gh.lazySingleton<_i276.GetServiceById>(
-        () => _i276.GetServiceById(gh<_i591.ServiceRepository>()));
-    gh.lazySingleton<_i85.SearchServices>(
-        () => _i85.SearchServices(gh<_i591.ServiceRepository>()));
+    gh.factory<_i448.DeliveryInfoActionCubit>(
+        () => _i448.DeliveryInfoActionCubit(
+              gh<_i904.AddDeliveryInfoUseCase>(),
+              gh<_i818.EditDeliveryInfoUseCase>(),
+              gh<_i298.SelectDeliveryInfoUseCase>(),
+            ));
+    gh.factory<_i367.ServiceBloc>(
+        () => _i367.ServiceBloc(gh<_i327.GetServiceUseCase>()));
     gh.factory<_i244.RatingBloc>(() => _i244.RatingBloc(
           addRating: gh<_i345.AddRating>(),
           getRatingsByUser: gh<_i207.GetRatingsByUser>(),
-        ));
-    gh.factory<_i606.DeliveryInfoBloc>(() => _i606.DeliveryInfoBloc(
-          addDeliveryInfo: gh<_i281.AddDeliveryInfo>(),
-          updateDeliveryInfo: gh<_i537.UpdateDeliveryInfo>(),
-          deleteDeliveryInfo: gh<_i233.DeleteDeliveryInfo>(),
-          getAllDeliveryInfo: gh<_i515.GetAllDeliveryInfo>(),
-          getDefaultDeliveryInfo: gh<_i525.GetDefaultDeliveryInfo>(),
-          setDefaultDeliveryInfo: gh<_i289.SetDefaultDeliveryInfo>(),
         ));
     gh.factory<_i182.UserBloc>(() => _i182.UserBloc(
           gh<_i728.RegisterUseCase>(),
           gh<_i321.LoginUseCase>(),
           gh<_i64.GetLocalUserUseCase>(),
           gh<_i721.LogoutUseCase>(),
-        ));
-    gh.factory<_i367.ServiceBloc>(() => _i367.ServiceBloc(
-          getAllServices: gh<_i8.GetAllServices>(),
-          getServiceById: gh<_i276.GetServiceById>(),
-          searchServices: gh<_i85.SearchServices>(),
         ));
     return this;
   }

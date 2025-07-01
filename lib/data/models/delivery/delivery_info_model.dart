@@ -1,7 +1,26 @@
+import 'dart:convert';
+
 import 'package:flutter_delivery_app/domain/entities/delivery/delivery_info.dart';
 import 'package:hive/hive.dart';
 
 part 'delivery_info_model.g.dart';
+
+DeliveryInfoModel deliveryInfoModelFromRemoteJson(String str) =>
+    DeliveryInfoModel.fromJson(json.decode(str));
+DeliveryInfoModel deliveryInfoModelFromLocalJson(String str) =>
+    DeliveryInfoModel.fromJson(json.decode(str));
+List<DeliveryInfoModel> deliveryInfoModelListFromRemoteJson(String str) =>
+    List<DeliveryInfoModel>.from(
+      json.decode(str).map((x) => DeliveryInfoModel.fromJson(x)),
+    );
+List<DeliveryInfoModel> deliveryInfoModelListFromLocalJson(String str) =>
+    List<DeliveryInfoModel>.from(
+      json.decode(str).map((x) => DeliveryInfoModel.fromJson(x)),
+    );
+String deliveryInfoModelToJson(DeliveryInfoModel data) =>
+    json.encode(data.toJson());
+String deliveryInfoModelListToJson(List<DeliveryInfoModel> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 @HiveType(typeId: 2)
 class DeliveryInfoModel extends DeliveryInfo {
@@ -29,7 +48,7 @@ class DeliveryInfoModel extends DeliveryInfo {
   @override
   final bool isDefault;
 
-  DeliveryInfoModel({
+  const DeliveryInfoModel({
     required this.id,
     required this.userId,
     required this.address,
@@ -82,4 +101,14 @@ class DeliveryInfoModel extends DeliveryInfo {
       isDefault: isDefault ?? this.isDefault,
     );
   }
+
+  factory DeliveryInfoModel.fromEntity(DeliveryInfo entity) =>
+      DeliveryInfoModel(
+        id: entity.id,
+        userId: entity.userId,
+        address: entity.address,
+        city: entity.city,
+        contactNumber: entity.contactNumber,
+        isDefault: entity.isDefault,
+      );
 }

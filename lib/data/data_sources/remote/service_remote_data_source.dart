@@ -1,13 +1,13 @@
-import 'dart:convert';
-
-import 'package:flutter_delivery_app/data/models/service/service_model.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_delivery_app/core/constants/strings.dart';
+import 'package:flutter_delivery_app/core/error/exceptions.dart';
+import 'package:flutter_delivery_app/data/models/service/service_response_model.dart';
+import 'package:flutter_delivery_app/domain/usecases/service/get_service_use_case.dart';
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 
 abstract class ServiceRemoteDataSource {
-  Future<List<ServiceModel>> fetchRemoteServices();
-  Future<ServiceModel?> fetchServiceById(String id);
-  Future<List<ServiceModel>> searchServices(String keyword);
+  Future<ServiceResponseModel> getServices(FilterServiceParams params);
 }
 
 @LazySingleton(as: ServiceRemoteDataSource)
@@ -16,41 +16,24 @@ class HttpServiceRemoteDataSource implements ServiceRemoteDataSource {
 
   HttpServiceRemoteDataSource(this.client);
 
-  final String baseUrl = 'https://example.com/api/services';
-
   @override
-  Future<List<ServiceModel>> fetchRemoteServices() async {
-    final response = await client.get(Uri.parse(baseUrl));
+  Future<ServiceResponseModel> getServices(FilterServiceParams params) async {
+    final uri = Uri.parse('$baseUrl/services').replace(
+      queryParameters: params
+          .toQueryParams(), // ✅ Now uses the full pagination + filter map
+    );
+
+    final response = await client.get(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+    );
+    debugPrint("Response status: ${response.statusCode}");
+    debugPrint("Response body: ${response.body}");
 
     if (response.statusCode == 200) {
-      final List<dynamic> jsonData = json.decode(response.body);
-      return jsonData.map((e) => ServiceModel.fromJson(e)).toList();
+      return serviceResponseModelFromJson(response.body);
     } else {
-      throw Exception('Failed to fetch services');
-    }
-  }
-
-  @override
-  Future<ServiceModel?> fetchServiceById(String id) async {
-    final response = await client.get(Uri.parse('$baseUrl/$id'));
-
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      return ServiceModel.fromJson(jsonData);
-    } else {
-      return null;
-    }
-  }
-
-  @override
-  Future<List<ServiceModel>> searchServices(String keyword) async {
-    final response = await client.get(Uri.parse('$baseUrl/search?q=$keyword'));
-
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonData = json.decode(response.body);
-      return jsonData.map((e) => ServiceModel.fromJson(e)).toList();
-    } else {
-      throw Exception('Search failed');
+      throw ServerException();
     }
   }
 }

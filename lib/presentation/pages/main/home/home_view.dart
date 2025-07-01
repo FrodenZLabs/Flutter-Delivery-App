@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
+import 'package:flutter_delivery_app/core/constants/images.dart';
+import 'package:flutter_delivery_app/core/router/app_router.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -13,40 +15,40 @@ class _HomeViewState extends State<HomeView> {
 
   // Dummy Data with image paths
   final List<Map<String, String>> popularServices = [
-    {'title': 'Food Delivery', 'image': 'assets/images/pharmacy.png'},
-    {'title': 'Grocery Delivery', 'image': 'assets/images/grocery.png'},
-    {'title': 'Parcel Pickup', 'image': 'assets/images/promotions.png'},
-    {'title': 'Laundry Service', 'image': 'assets/images/pharmacy.png'},
+    {'title': 'Food Delivery', 'image': kPharmacy},
+    {'title': 'Grocery Delivery', 'image': kGrocery},
+    {'title': 'Parcel Pickup', 'image': kPromotions},
+    {'title': 'Laundry Service', 'image': kPharmacy},
   ];
 
   final List<Map<String, String>> featuredServices = [
     {
-      'image': 'assets/images/laundry.png',
+      'image': kLaundry,
       'title': 'Laundry Service',
       'subtitle': 'Same-day pickup and delivery',
     },
     {
-      'image': 'assets/images/dry-cleaning.png',
+      'image': kDryCleaning,
       'title': 'Water Delivery',
       'subtitle': 'Expert dry cleaning services',
     },
     {
-      'image': 'assets/images/shoe-repair.png',
+      'image': kShoeRepair,
       'title': 'Shoe Repair',
       'subtitle': 'Professional shoe repair',
     },
     {
-      'image': 'assets/images/tailoring.png',
+      'image': kTailoring,
       'title': 'Tailoring',
       'subtitle': 'Custom tailoring and alterations',
     },
     {
-      'image': 'assets/images/dry-cleaning.png',
+      'image': kDryCleaning,
       'title': 'Document Delivery',
       'subtitle': 'Expert dry cleaning services',
     },
     {
-      'image': 'assets/images/laundry.png',
+      'image': kLaundry,
       'title': 'Cake Delivery',
       'subtitle': 'Same-day pickup and delivery',
     },
@@ -63,8 +65,8 @@ class _HomeViewState extends State<HomeView> {
           children: [
             // ✅ Logo Image
             Image.asset(
-              'assets/images/logo.png', // <-- Replace with your actual logo path
-              height: 60,
+              kAppLogo, // <-- Replace with your actual logo path
+              height: 50,
             ),
             const SizedBox(width: 16), // Space between image and text
             // ✅ Text Title
@@ -94,6 +96,27 @@ class _HomeViewState extends State<HomeView> {
             ),
           ],
         ),
+        // ✅ Add Avatar Icon Button on the Right
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  AppRouter.profile,
+                ); // <-- Make sure profile route exists
+              },
+              child: CircleAvatar(
+                radius: 20,
+                backgroundImage: AssetImage(
+                  kUserAvatar,
+                ), // <-- Put your user avatar image here
+                backgroundColor:
+                    Colors.grey[300], // fallback color if image fails
+              ),
+            ),
+          ),
+        ],
       ),
       backgroundColor: kBackgroundColor,
       body: SafeArea(
@@ -223,7 +246,7 @@ class _HomeViewState extends State<HomeView> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.asset(
-                          "assets/images/promotions.png",
+                          kPromotions,
                           height: 130,
                           width: 80,
                           fit: BoxFit.cover,

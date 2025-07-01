@@ -2,27 +2,19 @@ part of 'service_bloc.dart';
 
 abstract class ServiceEvent extends Equatable {
   const ServiceEvent();
+}
+
+class LoadAllServices extends ServiceEvent {
+  final FilterServiceParams params;
+  const LoadAllServices(this.params);
 
   @override
   List<Object?> get props => [];
 }
 
-class LoadAllServices extends ServiceEvent {}
-
-class LoadGetServiceById extends ServiceEvent {
-  final String id;
-
-  const LoadGetServiceById(this.id);
+class LoadMoreServices extends ServiceEvent {
+  const LoadMoreServices();
 
   @override
-  List<Object> get props => [id];
-}
-
-class LoadSearchServices extends ServiceEvent {
-  final String query;
-
-  const LoadSearchServices(this.query);
-
-  @override
-  List<Object> get props => [query];
+  List<Object?> get props => [];
 }

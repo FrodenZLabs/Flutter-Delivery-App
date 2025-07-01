@@ -7,19 +7,21 @@ import 'package:flutter_delivery_app/data/models/delivery/delivery_info_model.da
 import 'package:flutter_delivery_app/data/models/schedule/schedule_model.dart';
 import 'package:flutter_delivery_app/data/models/service/service_model.dart';
 import 'package:flutter_delivery_app/data/models/user/user_model.dart';
-import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_bloc.dart';
 import 'package:flutter_delivery_app/presentation/blocs/driver/driver_bloc.dart';
+import 'package:flutter_delivery_app/presentation/blocs/filter/filter_cubit.dart';
 import 'package:flutter_delivery_app/presentation/blocs/home/navbar_cubit.dart';
 import 'package:flutter_delivery_app/presentation/blocs/rating/rating_bloc.dart';
 import 'package:flutter_delivery_app/presentation/blocs/schedule/schedule_bloc.dart';
 import 'package:flutter_delivery_app/presentation/blocs/service/service_bloc.dart';
 import 'package:flutter_delivery_app/presentation/blocs/user/user_bloc.dart';
+import 'package:flutter_delivery_app/presentation/widgets/loading_overlay.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sizer/sizer.dart';
 import 'package:toastification/toastification.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Future.delayed(Duration(seconds: 3));
 
   // Initialize Hive
   await Hive.initFlutter();
@@ -45,10 +47,10 @@ class DeliveryApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => getIt<NavbarCubit>()),
+        BlocProvider(create: (context) => getIt<FilterServiceCubit>()),
         BlocProvider(create: (context) => getIt<ServiceBloc>()),
         BlocProvider(create: (context) => getIt<UserBloc>()),
         BlocProvider(create: (context) => getIt<RatingBloc>()),
-        BlocProvider(create: (context) => getIt<DeliveryInfoBloc>()),
         BlocProvider(create: (context) => getIt<DriverBloc>()),
         BlocProvider(create: (context) => getIt<ScheduleBloc>()),
       ],
@@ -56,6 +58,7 @@ class DeliveryApp extends StatelessWidget {
         child: ResponsiveSizer(
           builder: (context, orientation, deviceType) {
             return MaterialApp(
+              navigatorKey: LoadingOverlay.navigatorKey,
               title: appTitle,
               debugShowCheckedModeBanner: false,
               initialRoute: AppRouter.home,

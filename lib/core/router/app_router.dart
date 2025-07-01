@@ -55,11 +55,16 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SignInView());
       case serviceDetails:
         Service service = routeSettings.arguments as Service;
-        return MaterialPageRoute(builder: (_) => const ServiceDetailsView());
+        return MaterialPageRoute(
+          builder: (_) => ServiceDetailsView(service: service),
+        );
       case ratings:
         return MaterialPageRoute(builder: (_) => const RatingServiceView());
       case schedule:
-        return MaterialPageRoute(builder: (_) => const ScheduleServiceView());
+        Service service = routeSettings.arguments as Service;
+        return MaterialPageRoute(
+          builder: (_) => ScheduleServiceView(service: service),
+        );
       case deliveryInfo:
         return MaterialPageRoute(builder: (_) => const DeliveryInfoView());
       case payment:

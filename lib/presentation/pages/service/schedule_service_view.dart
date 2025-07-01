@@ -1,9 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
+import 'package:flutter_delivery_app/domain/entities/service/service.dart';
+import 'package:flutter_delivery_app/presentation/widgets/input_form_button.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ScheduleServiceView extends StatefulWidget {
-  const ScheduleServiceView({super.key});
+  final Service service;
+
+  const ScheduleServiceView({super.key, required this.service});
 
   @override
   State<ScheduleServiceView> createState() => _ScheduleServiceViewState();
@@ -12,13 +18,6 @@ class ScheduleServiceView extends StatefulWidget {
 class _ScheduleServiceViewState extends State<ScheduleServiceView> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
-
-  // Dummy Service Data
-  final dummyService = {
-    'name': 'Laundry Service',
-    'subName': 'Same-day laundry and delivery',
-    'image': 'assets/images/laundry.png',
-  };
 
   // Dummy Delivery Info (Simulate empty and filled)
   Map<String, String>? dummyDeliveryInfo;
@@ -94,11 +93,17 @@ class _ScheduleServiceViewState extends State<ScheduleServiceView> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    dummyService['image']!,
-                    width: 80,
-                    height: 80,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.service.imageUrl,
+                    height: 70,
                     fit: BoxFit.cover,
+                    placeholder: (context, url) => Shimmer.fromColors(
+                      baseColor: Colors.grey.shade100,
+                      highlightColor: Colors.white,
+                      child: Container(color: Colors.grey.shade300),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Center(child: Icon(Icons.error)),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -107,7 +112,7 @@ class _ScheduleServiceViewState extends State<ScheduleServiceView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        dummyService['name']!,
+                        widget.service.name,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -115,7 +120,7 @@ class _ScheduleServiceViewState extends State<ScheduleServiceView> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        dummyService['subName']!,
+                        widget.service.subName,
                         style: const TextStyle(
                           fontSize: 18,
                           color: Colors.brown,
@@ -261,27 +266,10 @@ class _ScheduleServiceViewState extends State<ScheduleServiceView> {
         child: // ✅ Book Button
         SizedBox(
           width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () {
-              // TODO: Handle booking submission
-              print('Booking scheduled for: $selectedDate at $selectedTime');
-            },
-            icon: const Icon(
-              Icons.schedule_send,
-              color: Colors.white,
-              size: 20,
-            ),
-            label: const Text(
-              'Book Delivery',
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: kSecondaryColor,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
+          child: InputFormButton(
+            onClick: () {},
+            titleText: 'Book Delivery',
+            icon: Icon(Icons.schedule_send, color: Colors.white, size: 20),
           ),
         ),
       ),

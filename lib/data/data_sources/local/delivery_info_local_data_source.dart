@@ -3,89 +3,69 @@ import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
 
 abstract class DeliveryInfoLocalDataSource {
-  Future<void> cacheDeliveryInfo(DeliveryInfoModel info);
-  Future<void> updateDeliveryInfo(DeliveryInfoModel info);
-  Future<void> deleteDeliveryInfo(String id);
-  Future<List<DeliveryInfoModel>> getAllDeliveryInfo(String userId);
-  Future<void> setDefaultDeliveryInfo(String id);
-  Future<DeliveryInfoModel?> getDefaultDeliveryInfo(String userId);
-  Future<void> syncAllDeliveryInfo(List<DeliveryInfoModel> infos);
+  Future<List<DeliveryInfoModel>> getDeliveryInfo();
+  Future<DeliveryInfoModel?> getSelectedDeliveryInfo();
+  Future<void> saveDeliveryInfo(List<DeliveryInfoModel> params);
+  Future<void> updateDeliveryInfo(DeliveryInfoModel params);
+  Future<void> updateSelectedDeliveryInfo(DeliveryInfoModel params);
+  Future<void> clearDeliveryInfo();
 }
 
 @LazySingleton(as: DeliveryInfoLocalDataSource)
 class HiveDeliveryInfoLocalDataSource implements DeliveryInfoLocalDataSource {
-  static const String boxName = 'deliveryInfoBox';
+  static const String _boxName = 'delivery_info_box';
 
-  Future<Box<DeliveryInfoModel>> _openBox() =>
-      Hive.openBox<DeliveryInfoModel>(boxName);
-
-  @override
-  Future<void> cacheDeliveryInfo(DeliveryInfoModel info) async {
-    final box = await _openBox();
-    await box.put(info.id, info);
+  Future<Box<DeliveryInfoModel>> _openBox() async {
+    return await Hive.openBox<DeliveryInfoModel>(_boxName);
   }
 
   @override
-  Future<void> updateDeliveryInfo(DeliveryInfoModel info) async {
+  Future<List<DeliveryInfoModel>> getDeliveryInfo() async {
     final box = await _openBox();
-    await box.put(info.id, info);
+    return box.values.toList();
   }
 
   @override
-  Future<void> deleteDeliveryInfo(String id) async {
+  Future<DeliveryInfoModel?> getSelectedDeliveryInfo() async {
     final box = await _openBox();
-    await box.delete(id);
+    final defaultItems = box.values.where((element) => element.isDefault);
+    return defaultItems.isNotEmpty ? defaultItems.first : null;
   }
 
   @override
-  Future<List<DeliveryInfoModel>> getAllDeliveryInfo(String userId) async {
+  Future<void> saveDeliveryInfo(List<DeliveryInfoModel> params) async {
     final box = await _openBox();
-    return box.values.where((e) => e.userId == userId).toList();
+    await box.clear();
+    for (var deliveryInfo in params) {
+      await box.put(deliveryInfo.id, deliveryInfo);
+    }
   }
 
   @override
-  Future<void> setDefaultDeliveryInfo(String id) async {
+  Future<void> updateDeliveryInfo(DeliveryInfoModel params) async {
     final box = await _openBox();
-    for (var key in box.keys) {
-      final info = box.get(key);
-      if (info != null) {
-        await box.put(key, info.copyWith(isDefault: info.id == id));
+    await box.put(params.id, params);
+  }
+
+  @override
+  Future<void> updateSelectedDeliveryInfo(DeliveryInfoModel params) async {
+    final box = await _openBox();
+
+    // Unset all as default first
+    final allItems = box.values.toList();
+    for (var item in allItems) {
+      if (item.isDefault && item.id != params.id) {
+        await box.put(item.id, item.copyWith(isDefault: false));
       }
     }
+
+    // Set the selected one as default
+    await box.put(params.id, params.copyWith(isDefault: true));
   }
 
   @override
-  Future<DeliveryInfoModel?> getDefaultDeliveryInfo(String userId) async {
+  Future<void> clearDeliveryInfo() async {
     final box = await _openBox();
-
-    final defaultInfos = box.values.where(
-      (info) => info.userId == userId && info.isDefault,
-    );
-
-    if (defaultInfos.isNotEmpty) return defaultInfos.first;
-
-    final allInfos = box.values.where((info) => info.userId == userId);
-
-    return allInfos.isNotEmpty ? allInfos.first : null;
-  }
-
-  @override
-  Future<void> syncAllDeliveryInfo(List<DeliveryInfoModel> infos) async {
-    final box = await _openBox();
-
-    // Remove all existing delivery info entries for the user(s)
-    final userIds = infos.map((e) => e.userId).toSet();
-
-    final keysToDelete = box.keys.where((key) {
-      final info = box.get(key);
-      return info != null && userIds.contains(info.userId);
-    }).toList();
-
-    await box.deleteAll(keysToDelete);
-
-    // Insert all fetched entries
-    for (final info in infos) {
-      await box.put(info.id, info);
-    }
+    await box.clear();
   }
 }
