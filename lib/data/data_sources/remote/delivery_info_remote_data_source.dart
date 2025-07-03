@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/constants/strings.dart';
 import 'package:flutter_delivery_app/core/error/exceptions.dart';
 import 'package:flutter_delivery_app/data/models/delivery/delivery_info_model.dart';
@@ -5,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 
 abstract class DeliveryInfoRemoteDataSource {
-  Future<List<DeliveryInfoModel>> getDeliveryInfo(String token);
+  Future<List<DeliveryInfoModel>> getDeliveryInfo(String token, String userId);
   Future<DeliveryInfoModel> addDeliveryInfo(
     DeliveryInfoModel params,
     String token,
@@ -34,8 +35,10 @@ class HttpDeliveryInfoRemoteDataSource implements DeliveryInfoRemoteDataSource {
       },
       body: deliveryInfoModelToJson(params),
     );
+    debugPrint("Response body: ${response.body}");
+    debugPrint("Response status: ${response.statusCode}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       return deliveryInfoModelFromRemoteJson(response.body);
     } else {
       throw ServerException();
@@ -55,6 +58,8 @@ class HttpDeliveryInfoRemoteDataSource implements DeliveryInfoRemoteDataSource {
       },
       body: deliveryInfoModelToJson(params),
     );
+    debugPrint("Response body: ${response.body}");
+    debugPrint("Response status: ${response.statusCode}");
 
     if (response.statusCode == 200) {
       return deliveryInfoModelFromRemoteJson(response.body);
@@ -64,9 +69,12 @@ class HttpDeliveryInfoRemoteDataSource implements DeliveryInfoRemoteDataSource {
   }
 
   @override
-  Future<List<DeliveryInfoModel>> getDeliveryInfo(String token) async {
+  Future<List<DeliveryInfoModel>> getDeliveryInfo(
+    String userId,
+    String token,
+  ) async {
     final response = await client.get(
-      Uri.parse('$baseUrl/delivery-info'),
+      Uri.parse('$baseUrl/delivery-info/user/$userId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

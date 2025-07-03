@@ -5,6 +5,7 @@ import 'package:flutter_delivery_app/core/constants/validators.dart';
 import 'package:flutter_delivery_app/core/error/failures.dart';
 import 'package:flutter_delivery_app/core/router/app_router.dart';
 import 'package:flutter_delivery_app/domain/usecases/user/login_use_case.dart';
+import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_fetch/delivery_info_fetch_cubit.dart';
 import 'package:flutter_delivery_app/presentation/blocs/home/navbar_cubit.dart';
 import 'package:flutter_delivery_app/presentation/blocs/user/user_bloc.dart';
 import 'package:flutter_delivery_app/presentation/widgets/input_form_button.dart';
@@ -48,6 +49,7 @@ class _SignInViewState extends State<SignInView> {
         }
 
         if (state is UserLogged) {
+          context.read<DeliveryInfoFetchCubit>().fetchDeliveryInfo();
           context.read<NavbarCubit>().update(0);
           Navigator.of(context).pushNamedAndRemoveUntil(
             AppRouter.home,

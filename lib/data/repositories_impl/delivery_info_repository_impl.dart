@@ -95,13 +95,13 @@ class DeliveryInfoRepositoryImpl implements DeliveryInfoRepository {
     }
 
     final token = await userLocalDataSource.getToken();
+    final userId = await userLocalDataSource.getUserId();
     if (token.isEmpty) {
       return Left(AuthenticationFailure());
     }
 
     try {
-      final String token = await userLocalDataSource.getToken();
-      final result = await remote.getDeliveryInfo(token);
+      final result = await remote.getDeliveryInfo(userId, token);
       await local.saveDeliveryInfo(result);
       return Right(result);
     } on Failure catch (failure) {
@@ -113,7 +113,10 @@ class DeliveryInfoRepositoryImpl implements DeliveryInfoRepository {
   Future<Either<Failure, DeliveryInfo>> getSelectedDeliveryInfo() async {
     try {
       final result = await local.getSelectedDeliveryInfo();
-      return Right(result!);
+      if (result == null) {
+        return Left(CacheFailure());
+      }
+      return Right(result);
     } on Failure catch (failure) {
       return Left(failure);
     }

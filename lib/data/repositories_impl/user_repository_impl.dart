@@ -36,6 +36,8 @@ class UserRepositoryImpl implements UserRepository {
 
     try {
       final remoteResponse = await remote.loginUser(params);
+      await local.saveToken(remoteResponse.token);
+      await local.saveUser(remoteResponse.user);
       return Right(remoteResponse.user);
     } on Failure catch (failure) {
       return Left(failure);

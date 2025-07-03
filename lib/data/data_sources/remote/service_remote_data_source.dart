@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_delivery_app/core/constants/strings.dart';
 import 'package:flutter_delivery_app/core/error/exceptions.dart';
 import 'package:flutter_delivery_app/data/models/service/service_response_model.dart';
@@ -27,8 +26,6 @@ class HttpServiceRemoteDataSource implements ServiceRemoteDataSource {
       uri,
       headers: {'Content-Type': 'application/json'},
     );
-    debugPrint("Response status: ${response.statusCode}");
-    debugPrint("Response body: ${response.body}");
 
     if (response.statusCode == 200) {
       return serviceResponseModelFromJson(response.body);

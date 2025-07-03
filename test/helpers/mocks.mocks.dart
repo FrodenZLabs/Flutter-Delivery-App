@@ -684,6 +684,21 @@ class MockUserLocalDataSource extends _i1.Mock
       ) as _i9.Future<String>);
 
   @override
+  _i9.Future<String> getUserId() => (super.noSuchMethod(
+        Invocation.method(
+          #getUserId,
+          [],
+        ),
+        returnValue: _i9.Future<String>.value(_i21.dummyValue<String>(
+          this,
+          Invocation.method(
+            #getUserId,
+            [],
+          ),
+        )),
+      ) as _i9.Future<String>);
+
+  @override
   _i9.Future<_i4.UserModel> getUser() => (super.noSuchMethod(
         Invocation.method(
           #getUser,
@@ -961,11 +976,17 @@ class MockDeliveryInfoRemoteDataSource extends _i1.Mock
   }
 
   @override
-  _i9.Future<List<_i6.DeliveryInfoModel>> getDeliveryInfo(String? token) =>
+  _i9.Future<List<_i6.DeliveryInfoModel>> getDeliveryInfo(
+    String? token,
+    String? userId,
+  ) =>
       (super.noSuchMethod(
         Invocation.method(
           #getDeliveryInfo,
-          [token],
+          [
+            token,
+            userId,
+          ],
         ),
         returnValue: _i9.Future<List<_i6.DeliveryInfoModel>>.value(
             <_i6.DeliveryInfoModel>[]),

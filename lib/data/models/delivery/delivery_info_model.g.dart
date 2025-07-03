@@ -22,14 +22,13 @@ class DeliveryInfoModelAdapter extends TypeAdapter<DeliveryInfoModel> {
       address: fields[2] as String,
       city: fields[3] as String,
       contactNumber: fields[4] as String,
-      isDefault: fields[5] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, DeliveryInfoModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -39,9 +38,7 @@ class DeliveryInfoModelAdapter extends TypeAdapter<DeliveryInfoModel> {
       ..writeByte(3)
       ..write(obj.city)
       ..writeByte(4)
-      ..write(obj.contactNumber)
-      ..writeByte(5)
-      ..write(obj.isDefault);
+      ..write(obj.contactNumber);
   }
 
   @override

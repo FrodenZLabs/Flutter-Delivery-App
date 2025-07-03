@@ -14,9 +14,24 @@ abstract class DeliveryInfoLocalDataSource {
 @LazySingleton(as: DeliveryInfoLocalDataSource)
 class HiveDeliveryInfoLocalDataSource implements DeliveryInfoLocalDataSource {
   static const String _boxName = 'delivery_info_box';
+  static const String _selectedIdBox = 'selected_delivery_info_box';
+  static const String _selectedIdKey = 'selected_id';
 
   Future<Box<DeliveryInfoModel>> _openBox() async {
     return await Hive.openBox<DeliveryInfoModel>(_boxName);
+  }
+
+  Future<Box<String>> _openSelectedIdBox() async {
+    return await Hive.openBox<String>(_selectedIdBox);
+  }
+
+  @override
+  Future<void> clearDeliveryInfo() async {
+    final box = await _openBox();
+    await box.clear();
+
+    final selectedIdBox = await _openSelectedIdBox();
+    await selectedIdBox.delete(_selectedIdKey);
   }
 
   @override
@@ -28,8 +43,14 @@ class HiveDeliveryInfoLocalDataSource implements DeliveryInfoLocalDataSource {
   @override
   Future<DeliveryInfoModel?> getSelectedDeliveryInfo() async {
     final box = await _openBox();
-    final defaultItems = box.values.where((element) => element.isDefault);
-    return defaultItems.isNotEmpty ? defaultItems.first : null;
+    final selectedIdBox = await _openSelectedIdBox();
+    final selectedId = selectedIdBox.get(_selectedIdKey);
+
+    if (selectedId == null) {
+      return null; // Or throw CacheFailure() if you want
+    }
+
+    return box.get(selectedId);
   }
 
   @override
@@ -50,22 +71,9 @@ class HiveDeliveryInfoLocalDataSource implements DeliveryInfoLocalDataSource {
   @override
   Future<void> updateSelectedDeliveryInfo(DeliveryInfoModel params) async {
     final box = await _openBox();
+    await box.put(params.id, params);
 
-    // Unset all as default first
-    final allItems = box.values.toList();
-    for (var item in allItems) {
-      if (item.isDefault && item.id != params.id) {
-        await box.put(item.id, item.copyWith(isDefault: false));
-      }
-    }
-
-    // Set the selected one as default
-    await box.put(params.id, params.copyWith(isDefault: true));
-  }
-
-  @override
-  Future<void> clearDeliveryInfo() async {
-    final box = await _openBox();
-    await box.clear();
+    final selectedIdBox = await _openSelectedIdBox();
+    await selectedIdBox.put(_selectedIdKey, params.id);
   }
 }

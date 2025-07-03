@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_delivery_app/core/constants/strings.dart';
 import 'package:flutter_delivery_app/core/error/exceptions.dart';
 import 'package:flutter_delivery_app/core/error/failures.dart';
@@ -31,8 +30,6 @@ class HttpUserRemoteDataSource implements UserRemoteDataSource {
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'email': params.email, 'password': params.password}),
     );
-    debugPrint("Response: ${response.statusCode}");
-    debugPrint("Response: ${response.body}");
 
     if (response.statusCode == 200) {
       final authResponse = authenticationResponseModelFromJson(response.body);

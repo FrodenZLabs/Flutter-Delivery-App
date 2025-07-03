@@ -32,43 +32,63 @@ class DeliveryInfoFetchCubit extends Cubit<DeliveryInfoFetchState> {
           selectedDeliveryInformation: state.selectedDeliveryInformation,
         ),
       );
+
+      // ✅ Step 1: Local cache load
       final cachedResult = await _getLocalDeliveryInfoUseCase(NoParams());
       cachedResult.fold(
-        (failure) => (),
-        (deliveryInfo) => emit(
-          DeliveryInfoFetchSuccess(
-            deliveryInformation: deliveryInfo,
-            selectedDeliveryInformation: state.selectedDeliveryInformation,
-          ),
-        ),
+        (failure) {
+          debugPrint("Error: $failure");
+        },
+        (deliveryInfo) {
+          emit(
+            DeliveryInfoFetchSuccess(
+              deliveryInformation: deliveryInfo,
+              selectedDeliveryInformation: state.selectedDeliveryInformation,
+            ),
+          );
+        },
       );
 
+      // ✅ Step 2: Selected delivery info
       final selectedDeliveryInfo = await _getSelectedDeliveryInfoUseCase(
         NoParams(),
       );
       selectedDeliveryInfo.fold(
-        (failure) => (),
-        (deliveryInfo) => emit(
-          DeliveryInfoFetchSuccess(
-            deliveryInformation: state.deliveryInformation,
-            selectedDeliveryInformation: deliveryInfo,
-          ),
-        ),
+        (failure) {
+          debugPrint("error $failure");
+        },
+        (deliveryInfo) {
+          emit(
+            DeliveryInfoFetchSuccess(
+              deliveryInformation: state.deliveryInformation,
+              selectedDeliveryInformation: deliveryInfo,
+            ),
+          );
+        },
       );
 
+      // ✅ Step 3: Remote fetch
       final result = await _getRemoteDeliveryInfoUseCase(NoParams());
       result.fold(
-        (failure) => emit(
-          DeliveryInfoFetchFail(deliveryInformation: state.deliveryInformation),
-        ),
-        (deliveryInfo) => emit(
-          DeliveryInfoFetchSuccess(
-            deliveryInformation: deliveryInfo,
-            selectedDeliveryInformation: state.selectedDeliveryInformation,
-          ),
-        ),
+        (failure) {
+          debugPrint("error $failure");
+          emit(
+            DeliveryInfoFetchFail(
+              deliveryInformation: state.deliveryInformation,
+            ),
+          );
+        },
+        (deliveryInfo) {
+          emit(
+            DeliveryInfoFetchSuccess(
+              deliveryInformation: deliveryInfo,
+              selectedDeliveryInformation: state.selectedDeliveryInformation,
+            ),
+          );
+        },
       );
     } catch (e) {
+      debugPrint('Error: $e');
       emit(
         DeliveryInfoFetchFail(
           deliveryInformation: state.deliveryInformation,

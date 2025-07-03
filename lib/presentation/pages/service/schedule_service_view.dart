@@ -1,8 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
+import 'package:flutter_delivery_app/core/router/app_router.dart';
 import 'package:flutter_delivery_app/domain/entities/service/service.dart';
+import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_fetch/delivery_info_fetch_cubit.dart';
 import 'package:flutter_delivery_app/presentation/widgets/input_form_button.dart';
+import 'package:flutter_delivery_app/presentation/widgets/loading_overlay.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -140,69 +144,89 @@ class _ScheduleServiceViewState extends State<ScheduleServiceView> {
             ),
             const SizedBox(height: 8),
 
-            dummyDeliveryInfo == null
-                ? GestureDetector(
-                    onTap: () {
-                      // Navigate to Delivery Info Selection Page
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Icon(
-                            Icons.edit_location_outlined,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'Select Delivery Information',
-                            style: TextStyle(
+            BlocBuilder<DeliveryInfoFetchCubit, DeliveryInfoFetchState>(
+              builder: (context, state) {
+                if (state is DeliveryInfoFetchLoading) {
+                  LoadingOverlay.show();
+                } else {
+                  LoadingOverlay.hide();
+                }
+
+                if (state is DeliveryInfoFetchSuccess) {
+                  final selectedDeliveryInfo =
+                      state.selectedDeliveryInformation;
+
+                  if (selectedDeliveryInfo == null) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(AppRouter.deliveryInfo);
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(
+                              Icons.edit_location_outlined,
                               color: Colors.grey,
-                              fontWeight: FontWeight.w500,
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                : GestureDetector(
-                    onTap: () {
-                      // Navigate to change address
-                      Navigator.pushNamed(context, '/delivery-info-list');
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.brown.shade50,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.brown.shade300),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Address: ${dummyDeliveryInfo!['address']}'),
-                          Text('City: ${dummyDeliveryInfo!['city']}'),
-                          Text('Contact: ${dummyDeliveryInfo!['contact']}'),
-                          const SizedBox(height: 6),
-                          const Text(
-                            'Change Address',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                              decoration: TextDecoration.underline,
+                            SizedBox(width: 8),
+                            Text(
+                              'Select Delivery Information',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  } else {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(AppRouter.deliveryInfo);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.brown.shade50,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.brown.shade300),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text('Address: ${selectedDeliveryInfo.address}'),
+                            Text('City: ${selectedDeliveryInfo.city}'),
+                            Text(
+                              'Contact: ${selectedDeliveryInfo.contactNumber}',
+                            ),
+                            const SizedBox(height: 6),
+                            const Text(
+                              'Change Address',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                } else {
+                  return const Text('Failed to load delivery info');
+                }
+              },
+            ),
             const SizedBox(height: 20),
 
             // ✅ Schedule Date

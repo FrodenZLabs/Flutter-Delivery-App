@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 
 abstract class UserLocalDataSource {
   Future<String> getToken();
+  Future<String> getUserId();
   Future<UserModel> getUser();
   Future<void> saveUser(UserModel user);
   Future<void> clearCache();
@@ -49,6 +50,12 @@ class HiveUserLocalDataSource implements UserLocalDataSource {
     } else {
       throw Exception('User not found');
     }
+  }
+
+  @override
+  Future<String> getUserId() async {
+    final user = await getUser();
+    return user.id; // ✅ Get user id from saved UserModel
   }
 
   @override

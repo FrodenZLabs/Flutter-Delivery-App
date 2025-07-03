@@ -257,18 +257,19 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i345.AddRating(gh<_i56.RatingRepository>()));
     gh.lazySingleton<_i207.GetRatingsByUser>(
         () => _i207.GetRatingsByUser(gh<_i56.RatingRepository>()));
-    gh.factory<_i448.DeliveryInfoActionCubit>(
-        () => _i448.DeliveryInfoActionCubit(
-              gh<_i904.AddDeliveryInfoUseCase>(),
-              gh<_i818.EditDeliveryInfoUseCase>(),
-              gh<_i298.SelectDeliveryInfoUseCase>(),
-            ));
     gh.factory<_i367.ServiceBloc>(
         () => _i367.ServiceBloc(gh<_i327.GetServiceUseCase>()));
     gh.factory<_i244.RatingBloc>(() => _i244.RatingBloc(
           addRating: gh<_i345.AddRating>(),
           getRatingsByUser: gh<_i207.GetRatingsByUser>(),
         ));
+    gh.factory<_i448.DeliveryInfoActionCubit>(
+        () => _i448.DeliveryInfoActionCubit(
+              gh<_i904.AddDeliveryInfoUseCase>(),
+              gh<_i818.EditDeliveryInfoUseCase>(),
+              gh<_i298.SelectDeliveryInfoUseCase>(),
+              gh<_i943.UserLocalDataSource>(),
+            ));
     gh.factory<_i182.UserBloc>(() => _i182.UserBloc(
           gh<_i728.RegisterUseCase>(),
           gh<_i321.LoginUseCase>(),

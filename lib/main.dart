@@ -7,6 +7,8 @@ import 'package:flutter_delivery_app/data/models/delivery/delivery_info_model.da
 import 'package:flutter_delivery_app/data/models/schedule/schedule_model.dart';
 import 'package:flutter_delivery_app/data/models/service/service_model.dart';
 import 'package:flutter_delivery_app/data/models/user/user_model.dart';
+import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_action/delivery_info_action_cubit.dart';
+import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_fetch/delivery_info_fetch_cubit.dart';
 import 'package:flutter_delivery_app/presentation/blocs/driver/driver_bloc.dart';
 import 'package:flutter_delivery_app/presentation/blocs/filter/filter_cubit.dart';
 import 'package:flutter_delivery_app/presentation/blocs/home/navbar_cubit.dart';
@@ -49,6 +51,8 @@ class DeliveryApp extends StatelessWidget {
         BlocProvider(create: (context) => getIt<NavbarCubit>()),
         BlocProvider(create: (context) => getIt<FilterServiceCubit>()),
         BlocProvider(create: (context) => getIt<ServiceBloc>()),
+        BlocProvider(create: (context) => getIt<DeliveryInfoActionCubit>()),
+        BlocProvider(create: (context) => getIt<DeliveryInfoFetchCubit>()),
         BlocProvider(create: (context) => getIt<UserBloc>()),
         BlocProvider(create: (context) => getIt<RatingBloc>()),
         BlocProvider(create: (context) => getIt<DriverBloc>()),

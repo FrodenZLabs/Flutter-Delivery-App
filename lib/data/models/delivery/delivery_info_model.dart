@@ -5,14 +5,19 @@ import 'package:hive/hive.dart';
 
 part 'delivery_info_model.g.dart';
 
-DeliveryInfoModel deliveryInfoModelFromRemoteJson(String str) =>
-    DeliveryInfoModel.fromJson(json.decode(str));
+DeliveryInfoModel deliveryInfoModelFromRemoteJson(String str) {
+  final Map<String, dynamic> jsonResponse = json.decode(str);
+  return DeliveryInfoModel.fromJson(jsonResponse['data']);
+}
+
 DeliveryInfoModel deliveryInfoModelFromLocalJson(String str) =>
     DeliveryInfoModel.fromJson(json.decode(str));
-List<DeliveryInfoModel> deliveryInfoModelListFromRemoteJson(String str) =>
-    List<DeliveryInfoModel>.from(
-      json.decode(str).map((x) => DeliveryInfoModel.fromJson(x)),
-    );
+List<DeliveryInfoModel> deliveryInfoModelListFromRemoteJson(String str) {
+  final decoded = json.decode(str);
+  final List<dynamic> dataList = decoded['data'];
+  return dataList.map((x) => DeliveryInfoModel.fromJson(x)).toList();
+}
+
 List<DeliveryInfoModel> deliveryInfoModelListFromLocalJson(String str) =>
     List<DeliveryInfoModel>.from(
       json.decode(str).map((x) => DeliveryInfoModel.fromJson(x)),
@@ -44,24 +49,18 @@ class DeliveryInfoModel extends DeliveryInfo {
   @override
   final String contactNumber;
 
-  @HiveField(5)
-  @override
-  final bool isDefault;
-
   const DeliveryInfoModel({
     required this.id,
     required this.userId,
     required this.address,
     required this.city,
     required this.contactNumber,
-    required this.isDefault,
   }) : super(
          id: id,
          userId: userId,
          address: address,
          city: city,
          contactNumber: contactNumber,
-         isDefault: isDefault,
        );
 
   factory DeliveryInfoModel.fromJson(Map<String, dynamic> json) {
@@ -71,7 +70,6 @@ class DeliveryInfoModel extends DeliveryInfo {
       address: json['address'],
       city: json['city'],
       contactNumber: json['contactNumber'],
-      isDefault: json['isDefault'] ?? false,
     );
   }
 
@@ -81,7 +79,6 @@ class DeliveryInfoModel extends DeliveryInfo {
     'address': address,
     'city': city,
     'contactNumber': contactNumber,
-    'isDefault': isDefault,
   };
 
   DeliveryInfoModel copyWith({
@@ -90,7 +87,6 @@ class DeliveryInfoModel extends DeliveryInfo {
     String? address,
     String? city,
     String? contactNumber,
-    bool? isDefault,
   }) {
     return DeliveryInfoModel(
       id: id ?? this.id,
@@ -98,7 +94,6 @@ class DeliveryInfoModel extends DeliveryInfo {
       address: address ?? this.address,
       city: city ?? this.city,
       contactNumber: contactNumber ?? this.contactNumber,
-      isDefault: isDefault ?? this.isDefault,
     );
   }
 
@@ -109,6 +104,5 @@ class DeliveryInfoModel extends DeliveryInfo {
         address: entity.address,
         city: entity.city,
         contactNumber: entity.contactNumber,
-        isDefault: entity.isDefault,
       );
 }
