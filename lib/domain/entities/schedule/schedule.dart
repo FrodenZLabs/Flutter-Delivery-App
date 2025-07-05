@@ -14,6 +14,6 @@ class Schedule {
     required this.deliveryInfoId,
     required this.scheduleDate,
     required this.scheduleTime,
-    this.status = 'Pending',
+    required this.status,
   });
 }

@@ -7,13 +7,13 @@ import 'package:flutter_delivery_app/domain/repositories/schedule/schedule_repos
 import 'package:injectable/injectable.dart';
 
 @lazySingleton
-class UpdateSchedule implements UseCase<Schedule, ScheduleModel> {
+class BookScheduleUseCase implements UseCase<Schedule, ScheduleModel> {
   final ScheduleRepository repository;
 
-  UpdateSchedule(this.repository);
+  BookScheduleUseCase(this.repository);
 
   @override
   Future<Either<Failure, Schedule>> call(ScheduleModel params) async {
-    return await repository.updateSchedule(params);
+    return await repository.bookSchedule(params);
   }
 }

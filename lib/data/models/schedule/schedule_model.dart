@@ -1,7 +1,22 @@
+import 'dart:convert';
+
 import 'package:flutter_delivery_app/domain/entities/schedule/schedule.dart';
 import 'package:hive/hive.dart';
 
 part 'schedule_model.g.dart';
+
+ScheduleModel scheduleModelFromRemoteJson(String str) {
+  final Map<String, dynamic> jsonResponse = json.decode(str);
+  return ScheduleModel.fromJson(jsonResponse['data']);
+}
+
+List<ScheduleModel> scheduleModelListFromRemoteJson(String str) {
+  final decoded = json.decode(str);
+  final List<dynamic> dataList = decoded['data'];
+  return dataList.map((x) => ScheduleModel.fromJson(x)).toList();
+}
+
+String scheduleModelToJson(ScheduleModel data) => json.encode(data.toJson());
 
 @HiveType(typeId: 3)
 class ScheduleModel extends Schedule {

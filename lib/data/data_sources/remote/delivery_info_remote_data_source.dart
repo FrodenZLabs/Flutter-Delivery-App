@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/constants/strings.dart';
 import 'package:flutter_delivery_app/core/error/exceptions.dart';
 import 'package:flutter_delivery_app/data/models/delivery/delivery_info_model.dart';
@@ -35,8 +34,6 @@ class HttpDeliveryInfoRemoteDataSource implements DeliveryInfoRemoteDataSource {
       },
       body: deliveryInfoModelToJson(params),
     );
-    debugPrint("Response body: ${response.body}");
-    debugPrint("Response status: ${response.statusCode}");
 
     if (response.statusCode == 201) {
       return deliveryInfoModelFromRemoteJson(response.body);
@@ -58,8 +55,6 @@ class HttpDeliveryInfoRemoteDataSource implements DeliveryInfoRemoteDataSource {
       },
       body: deliveryInfoModelToJson(params),
     );
-    debugPrint("Response body: ${response.body}");
-    debugPrint("Response status: ${response.statusCode}");
 
     if (response.statusCode == 200) {
       return deliveryInfoModelFromRemoteJson(response.body);

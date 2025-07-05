@@ -3,12 +3,9 @@ import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
 
 abstract class ScheduleLocalDataSource {
-  Future<void> cacheSchedule(ScheduleModel schedule);
-  Future<void> updateSchedule(ScheduleModel schedule);
-  Future<void> deleteSchedule(String id);
-  Future<ScheduleModel?> getScheduleById(String id);
+  Future<void> cacheSchedule(List<ScheduleModel> params);
+  Future<void> updateSchedule(ScheduleModel params);
   Future<List<ScheduleModel>> getSchedulesByUser(String userId);
-  Future<void> syncAllSchedules(List<ScheduleModel> schedules);
 }
 
 @LazySingleton(as: ScheduleLocalDataSource)
@@ -18,38 +15,20 @@ class HiveScheduleLocalDataSource implements ScheduleLocalDataSource {
   Future<Box<ScheduleModel>> _openBox() => Hive.openBox<ScheduleModel>(boxName);
 
   @override
-  Future<void> cacheSchedule(ScheduleModel schedule) async {
+  Future<void> updateSchedule(ScheduleModel params) async {
     final box = await _openBox();
-    await box.put(schedule.id, schedule);
-  }
-
-  @override
-  Future<void> updateSchedule(ScheduleModel schedule) async {
-    final box = await _openBox();
-    final existing = box.get(schedule.id);
+    final existing = box.get(params.id);
     if (existing != null) {
       final updated = existing.copyWith(
-        deliveryInfoId: schedule.deliveryInfoId,
-        scheduleDate: schedule.scheduleDate,
-        scheduleTime: schedule.scheduleTime,
-        status: schedule.status,
+        deliveryInfoId: params.deliveryInfoId,
+        scheduleDate: params.scheduleDate,
+        scheduleTime: params.scheduleTime,
+        status: params.status,
       );
-      await box.put(schedule.id, updated);
+      await box.put(params.id, updated);
     } else {
-      await box.put(schedule.id, schedule);
+      await box.put(params.id, params);
     }
-  }
-
-  @override
-  Future<void> deleteSchedule(String id) async {
-    final box = await _openBox();
-    await box.delete(id);
-  }
-
-  @override
-  Future<ScheduleModel?> getScheduleById(String id) async {
-    final box = await _openBox();
-    return box.get(id);
   }
 
   @override
@@ -59,9 +38,10 @@ class HiveScheduleLocalDataSource implements ScheduleLocalDataSource {
   }
 
   @override
-  Future<void> syncAllSchedules(List<ScheduleModel> schedules) async {
+  Future<void> cacheSchedule(List<ScheduleModel> params) async {
     final box = await _openBox();
-    for (final schedule in schedules) {
+    await box.clear();
+    for (var schedule in params) {
       await box.put(schedule.id, schedule);
     }
   }

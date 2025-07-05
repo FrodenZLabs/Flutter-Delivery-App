@@ -18,22 +18,6 @@ class ServiceDetailsView extends StatefulWidget {
 
 class _ServiceDetailsViewState extends State<ServiceDetailsView> {
   final NumberFormat currencyFormat = NumberFormat('#,##0');
-  // Dummy Service Data for testing
-  final Service dummyService = const Service(
-    id: '1',
-    name: 'Dry Cleaning',
-    subName: 'Expert Dry Cleaning Services',
-    description:
-        'We provide professional dry cleaning for all your clothes with doorstep pickup and delivery. Same-day and next-day service available.',
-    imageUrl: 'assets/images/dry-cleaning.png',
-    baseFee: 300.0,
-    perKmFee: 50.0,
-    available: true,
-    openDay: 'Monday',
-    closeDay: 'Friday',
-    openTime: '8:00 AM',
-    closeTime: '5:00 PM',
-  );
 
   @override
   Widget build(BuildContext context) {

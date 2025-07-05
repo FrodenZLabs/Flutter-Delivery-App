@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
 import 'package:flutter_delivery_app/core/constants/images.dart';
 import 'package:flutter_delivery_app/core/router/app_router.dart';
+import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_fetch/delivery_info_fetch_cubit.dart';
+import 'package:flutter_delivery_app/presentation/blocs/user/user_bloc.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -53,6 +56,13 @@ class _HomeViewState extends State<HomeView> {
       'subtitle': 'Same-day pickup and delivery',
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<UserBloc>().add(CheckUserEvent());
+    context.read<DeliveryInfoFetchCubit>().fetchDeliveryInfo();
+  }
 
   @override
   Widget build(BuildContext context) {

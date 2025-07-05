@@ -78,14 +78,10 @@ import 'package:flutter_delivery_app/domain/usecases/rating/add_rating.dart'
     as _i345;
 import 'package:flutter_delivery_app/domain/usecases/rating/get_rating_by_user_id.dart'
     as _i207;
-import 'package:flutter_delivery_app/domain/usecases/schedule/book_schedule.dart'
-    as _i175;
-import 'package:flutter_delivery_app/domain/usecases/schedule/cancel_schedule.dart'
-    as _i263;
-import 'package:flutter_delivery_app/domain/usecases/schedule/get_schedule_by_id.dart'
-    as _i859;
-import 'package:flutter_delivery_app/domain/usecases/schedule/get_schedules_by_user.dart'
-    as _i875;
+import 'package:flutter_delivery_app/domain/usecases/schedule/book_schedule_use_case.dart'
+    as _i616;
+import 'package:flutter_delivery_app/domain/usecases/schedule/get_schedules_by_user_use_case.dart'
+    as _i330;
 import 'package:flutter_delivery_app/domain/usecases/schedule/update_schedule.dart'
     as _i108;
 import 'package:flutter_delivery_app/domain/usecases/service/get_service_use_case.dart'
@@ -157,6 +153,8 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i519.Client>(),
               gh<_i943.UserLocalDataSource>(),
             ));
+    gh.lazySingleton<_i1035.ScheduleRemoteDataSource>(
+        () => _i1035.HttpScheduleRemoteDataSource(client: gh<_i519.Client>()));
     gh.lazySingleton<_i596.DeliveryInfoRemoteDataSource>(() =>
         _i596.HttpDeliveryInfoRemoteDataSource(client: gh<_i519.Client>()));
     gh.lazySingleton<_i423.NetworkInfo>(
@@ -165,39 +163,25 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i407.HttpRatingRemoteDataSource(gh<_i519.Client>()));
     gh.lazySingleton<_i147.DriverRemoteDataSource>(
         () => _i147.HttpDriverRemoteDataSource(gh<_i519.Client>()));
-    gh.lazySingleton<_i1035.ScheduleRemoteDataSource>(
-        () => _i1035.HttpScheduleRemoteDataSource(
-              gh<_i519.Client>(),
-              gh<_i367.ScheduleLocalDataSource>(),
-            ));
     gh.lazySingleton<_i1047.ServiceRemoteDataSource>(
         () => _i1047.HttpServiceRemoteDataSource(gh<_i519.Client>()));
     gh.lazySingleton<_i24.ScheduleRepository>(
         () => _i498.ScheduleRepositoryImpl(
               gh<_i1035.ScheduleRemoteDataSource>(),
               gh<_i367.ScheduleLocalDataSource>(),
+              gh<_i423.NetworkInfo>(),
+              gh<_i943.UserLocalDataSource>(),
             ));
-    gh.lazySingleton<_i175.BookSchedule>(
-        () => _i175.BookSchedule(gh<_i24.ScheduleRepository>()));
-    gh.lazySingleton<_i263.CancelSchedule>(
-        () => _i263.CancelSchedule(gh<_i24.ScheduleRepository>()));
-    gh.lazySingleton<_i875.GetSchedulesByUser>(
-        () => _i875.GetSchedulesByUser(gh<_i24.ScheduleRepository>()));
-    gh.lazySingleton<_i859.GetScheduleById>(
-        () => _i859.GetScheduleById(gh<_i24.ScheduleRepository>()));
     gh.lazySingleton<_i108.UpdateSchedule>(
         () => _i108.UpdateSchedule(gh<_i24.ScheduleRepository>()));
+    gh.lazySingleton<_i616.BookScheduleUseCase>(
+        () => _i616.BookScheduleUseCase(gh<_i24.ScheduleRepository>()));
+    gh.lazySingleton<_i330.GetSchedulesByUserUseCase>(
+        () => _i330.GetSchedulesByUserUseCase(gh<_i24.ScheduleRepository>()));
     gh.lazySingleton<_i14.UserRepository>(() => _i1026.UserRepositoryImpl(
           gh<_i1038.UserRemoteDataSource>(),
           gh<_i943.UserLocalDataSource>(),
           gh<_i423.NetworkInfo>(),
-        ));
-    gh.factory<_i500.ScheduleBloc>(() => _i500.ScheduleBloc(
-          bookSchedule: gh<_i175.BookSchedule>(),
-          updateSchedule: gh<_i108.UpdateSchedule>(),
-          cancelSchedule: gh<_i263.CancelSchedule>(),
-          getScheduleById: gh<_i859.GetScheduleById>(),
-          getSchedulesByUser: gh<_i875.GetSchedulesByUser>(),
         ));
     gh.lazySingleton<_i16.DriverRepository>(
         () => _i256.DriverRepositoryImpl(gh<_i147.DriverRemoteDataSource>()));
@@ -247,6 +231,12 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i721.LogoutUseCase(gh<_i14.UserRepository>()));
     gh.lazySingleton<_i728.RegisterUseCase>(
         () => _i728.RegisterUseCase(gh<_i14.UserRepository>()));
+    gh.factory<_i500.ScheduleBloc>(() => _i500.ScheduleBloc(
+          gh<_i616.BookScheduleUseCase>(),
+          gh<_i108.UpdateSchedule>(),
+          gh<_i330.GetSchedulesByUserUseCase>(),
+          gh<_i943.UserLocalDataSource>(),
+        ));
     gh.factory<_i346.DeliveryInfoFetchCubit>(() => _i346.DeliveryInfoFetchCubit(
           gh<_i723.GetRemoteDeliveryInfoUseCase>(),
           gh<_i1008.GetLocalDeliveryInfoUseCase>(),

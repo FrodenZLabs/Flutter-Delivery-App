@@ -1,51 +1,21 @@
 part of 'schedule_bloc.dart';
 
-abstract class ScheduleEvent extends Equatable {
-  @override
-  List<Object?> get props => [];
-}
+abstract class ScheduleEvent {}
 
 class BookScheduleEvent extends ScheduleEvent {
-  final Schedule schedule;
+  final ScheduleModel params;
 
-  BookScheduleEvent(this.schedule);
-
-  @override
-  List<Object?> get props => [schedule];
+  BookScheduleEvent(this.params);
 }
 
 class UpdateScheduleEvent extends ScheduleEvent {
   final Schedule schedule;
 
   UpdateScheduleEvent(this.schedule);
-
-  @override
-  List<Object?> get props => [schedule];
-}
-
-class CancelScheduleEvent extends ScheduleEvent {
-  final String scheduleId;
-
-  CancelScheduleEvent(this.scheduleId);
-
-  @override
-  List<Object?> get props => [scheduleId];
-}
-
-class GetScheduleByIdEvent extends ScheduleEvent {
-  final String scheduleId;
-
-  GetScheduleByIdEvent(this.scheduleId);
-
-  @override
-  List<Object?> get props => [scheduleId];
 }
 
 class GetSchedulesByUserEvent extends ScheduleEvent {
-  final String userId;
+  final ScheduleModel params;
 
-  GetSchedulesByUserEvent(this.userId);
-
-  @override
-  List<Object?> get props => [userId];
+  GetSchedulesByUserEvent(this.params);
 }

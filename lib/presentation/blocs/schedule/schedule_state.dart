@@ -1,46 +1,26 @@
 part of 'schedule_bloc.dart';
 
-abstract class ScheduleState extends Equatable {
-  @override
-  List<Object?> get props => [];
-}
+abstract class ScheduleState {}
 
 class ScheduleInitial extends ScheduleState {}
 
 class ScheduleLoading extends ScheduleState {}
 
-class ScheduleSuccess extends ScheduleState {
-  final String message;
-
-  ScheduleSuccess({required this.message});
-
-  @override
-  List<Object?> get props => [message];
-}
-
-class ScheduleLoaded extends ScheduleState {
-  final List<Schedule> schedules;
-
-  ScheduleLoaded(this.schedules);
-
-  @override
-  List<Object?> get props => [schedules];
-}
-
-class SingleScheduleLoaded extends ScheduleState {
+class ScheduleAddSuccess extends ScheduleState {
   final Schedule schedule;
 
-  SingleScheduleLoaded(this.schedule);
-
-  @override
-  List<Object?> get props => [schedule];
+  ScheduleAddSuccess(this.schedule);
 }
 
-class ScheduleFailure extends ScheduleState {
-  final String error;
+class ScheduleFailure extends ScheduleState {}
 
-  ScheduleFailure(this.error);
+// Fetch schedule
+class ScheduleFetchLoading extends ScheduleState {}
 
-  @override
-  List<Object?> get props => [error];
+class ScheduleFetchSuccess extends ScheduleState {
+  final List<ScheduleModel> schedule;
+
+  ScheduleFetchSuccess(this.schedule);
 }
+
+class ScheduleFetchFail extends ScheduleState {}

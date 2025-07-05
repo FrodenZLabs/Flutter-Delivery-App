@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_delivery_app/data/data_sources/local/user_local_data_source.dart';
+import 'package:flutter_delivery_app/data/models/schedule/schedule_model.dart';
 import 'package:flutter_delivery_app/domain/entities/schedule/schedule.dart';
-import 'package:flutter_delivery_app/domain/usecases/schedule/book_schedule.dart';
-import 'package:flutter_delivery_app/domain/usecases/schedule/cancel_schedule.dart';
-import 'package:flutter_delivery_app/domain/usecases/schedule/get_schedule_by_id.dart';
-import 'package:flutter_delivery_app/domain/usecases/schedule/get_schedules_by_user.dart';
+import 'package:flutter_delivery_app/domain/usecases/schedule/book_schedule_use_case.dart';
+import 'package:flutter_delivery_app/domain/usecases/schedule/get_schedules_by_user_use_case.dart';
 import 'package:flutter_delivery_app/domain/usecases/schedule/update_schedule.dart';
 import 'package:injectable/injectable.dart';
 
@@ -13,88 +13,58 @@ part 'schedule_state.dart';
 
 @injectable
 class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
-  final BookSchedule bookSchedule;
+  final BookScheduleUseCase _bookScheduleUseCase;
   final UpdateSchedule updateSchedule;
-  final CancelSchedule cancelSchedule;
-  final GetScheduleById getScheduleById;
-  final GetSchedulesByUser getSchedulesByUser;
+  final GetSchedulesByUserUseCase _getSchedulesByUserUseCase;
+  final UserLocalDataSource _userLocalDataSource;
 
-  ScheduleBloc({
-    required this.bookSchedule,
-    required this.updateSchedule,
-    required this.cancelSchedule,
-    required this.getScheduleById,
-    required this.getSchedulesByUser,
-  }) : super(ScheduleInitial()) {
+  ScheduleBloc(
+    this._bookScheduleUseCase,
+    this.updateSchedule,
+    this._getSchedulesByUserUseCase,
+    this._userLocalDataSource,
+  ) : super(ScheduleInitial()) {
     on<BookScheduleEvent>(_onBook);
-    on<UpdateScheduleEvent>(_onUpdate);
-    on<CancelScheduleEvent>(_onCancel);
-    on<GetScheduleByIdEvent>(_onGetById);
-    on<GetSchedulesByUserEvent>(_onGetByUser);
+    on<GetSchedulesByUserEvent>(_onLoadSchedules);
   }
 
   Future<void> _onBook(
     BookScheduleEvent event,
     Emitter<ScheduleState> emit,
   ) async {
-    emit(ScheduleLoading());
     try {
-      await bookSchedule(event.schedule);
-      emit(ScheduleSuccess(message: 'Schedule booked successfully'));
+      emit(ScheduleLoading());
+      final userId = await _userLocalDataSource.getUserId();
+      final updatedParams = event.params.copyWith(userId: userId);
+
+      final result = await _bookScheduleUseCase(updatedParams);
+      result.fold(
+        (failure) => emit(ScheduleFailure()),
+        (schedule) => emit(ScheduleAddSuccess(schedule)),
+      );
     } catch (e) {
-      emit(ScheduleFailure(e.toString()));
+      emit(ScheduleFailure());
     }
   }
 
-  Future<void> _onUpdate(
-    UpdateScheduleEvent event,
-    Emitter<ScheduleState> emit,
-  ) async {
-    emit(ScheduleLoading());
-    try {
-      await updateSchedule(event.schedule);
-      emit(ScheduleSuccess(message: 'Schedule updated successfully'));
-    } catch (e) {
-      emit(ScheduleFailure(e.toString()));
-    }
-  }
-
-  Future<void> _onCancel(
-    CancelScheduleEvent event,
-    Emitter<ScheduleState> emit,
-  ) async {
-    emit(ScheduleLoading());
-    try {
-      await cancelSchedule(event.scheduleId);
-      emit(ScheduleSuccess(message: 'Schedule cancelled'));
-    } catch (e) {
-      emit(ScheduleFailure(e.toString()));
-    }
-  }
-
-  Future<void> _onGetById(
-    GetScheduleByIdEvent event,
-    Emitter<ScheduleState> emit,
-  ) async {
-    emit(ScheduleLoading());
-    try {
-      final schedule = await getScheduleById(event.scheduleId);
-      emit(SingleScheduleLoaded(schedule!));
-    } catch (e) {
-      emit(ScheduleFailure(e.toString()));
-    }
-  }
-
-  Future<void> _onGetByUser(
+  Future<void> _onLoadSchedules(
     GetSchedulesByUserEvent event,
     Emitter<ScheduleState> emit,
   ) async {
-    emit(ScheduleLoading());
     try {
-      final schedules = await getSchedulesByUser(event.userId);
-      emit(ScheduleLoaded(schedules));
+      emit(ScheduleFetchLoading());
+      final userId = await _userLocalDataSource.getUserId();
+      final updatedParams = event.params.copyWith(userId: userId);
+
+      final result = await _getSchedulesByUserUseCase(updatedParams);
+
+      debugPrint("Result: $result");
+      result.fold((failure) => emit(ScheduleFetchFail()), (schedules) {
+        final models = schedules.map((s) => s as ScheduleModel).toList();
+        emit(ScheduleFetchSuccess(models));
+      });
     } catch (e) {
-      emit(ScheduleFailure(e.toString()));
+      emit(ScheduleFetchFail());
     }
   }
 }

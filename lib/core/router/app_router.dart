@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/error/exceptions.dart';
+import 'package:flutter_delivery_app/domain/entities/schedule/schedule.dart';
 import 'package:flutter_delivery_app/domain/entities/service/service.dart';
 import 'package:flutter_delivery_app/presentation/pages/authentication/sign_in_view.dart';
 import 'package:flutter_delivery_app/presentation/pages/authentication/sign_up_view.dart';
@@ -70,7 +71,10 @@ class AppRouter {
       case payment:
         return MaterialPageRoute(builder: (_) => const PaymentMethodView());
       case orderDetails:
-        return MaterialPageRoute(builder: (_) => const OrderDetailsView());
+        Schedule schedule = routeSettings.arguments as Schedule;
+        return MaterialPageRoute(
+          builder: (_) => OrderDetailsView(schedule: schedule),
+        );
       case orderHistory:
         return MaterialPageRoute(builder: (_) => const OrderHistoryView());
       default:

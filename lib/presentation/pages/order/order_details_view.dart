@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
+import 'package:flutter_delivery_app/core/constants/images.dart';
+import 'package:flutter_delivery_app/domain/entities/schedule/schedule.dart';
 
 class OrderDetailsView extends StatelessWidget {
-  const OrderDetailsView({super.key});
+  final Schedule schedule;
+  const OrderDetailsView({super.key, required this.schedule});
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +13,7 @@ class OrderDetailsView extends StatelessWidget {
     final dummyService = {
       'name': 'Laundry Service',
       'subName': 'Same-day laundry and delivery',
-      'image': 'assets/images/laundry.png',
+      'image': kLaundry,
     };
 
     final dummyDeliveryInfo = {
@@ -21,7 +24,7 @@ class OrderDetailsView extends StatelessWidget {
 
     final dummyDriver = {
       'name': 'John Doe',
-      'image': 'assets/images/male-avatar.png',
+      'image': kMaleAvatar,
       'vehicle': 'Blue Sedan',
       'plate': 'KDA 123A',
     };

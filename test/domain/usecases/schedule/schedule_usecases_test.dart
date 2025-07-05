@@ -1,8 +1,8 @@
 import 'package:flutter_delivery_app/domain/entities/schedule/schedule.dart';
-import 'package:flutter_delivery_app/domain/usecases/schedule/book_schedule.dart';
+import 'package:flutter_delivery_app/domain/usecases/schedule/book_schedule_use_case.dart';
 import 'package:flutter_delivery_app/domain/usecases/schedule/cancel_schedule.dart';
 import 'package:flutter_delivery_app/domain/usecases/schedule/get_schedule_by_id.dart';
-import 'package:flutter_delivery_app/domain/usecases/schedule/get_schedules_by_user.dart';
+import 'package:flutter_delivery_app/domain/usecases/schedule/get_schedules_by_user_use_case.dart';
 import 'package:flutter_delivery_app/domain/usecases/schedule/update_schedule.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
