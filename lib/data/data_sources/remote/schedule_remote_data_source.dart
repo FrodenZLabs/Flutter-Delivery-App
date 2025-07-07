@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/constants/strings.dart';
 import 'package:flutter_delivery_app/core/error/exceptions.dart';
 import 'package:flutter_delivery_app/data/models/schedule/schedule_model.dart';
@@ -7,7 +6,6 @@ import 'package:injectable/injectable.dart';
 
 abstract class ScheduleRemoteDataSource {
   Future<ScheduleModel> bookSchedule(ScheduleModel params, String token);
-  Future<ScheduleModel> updateSchedule(ScheduleModel params, String token);
   Future<List<ScheduleModel>> getSchedulesInfo(
     ScheduleModel params,
     String userId,
@@ -31,20 +29,12 @@ class HttpScheduleRemoteDataSource implements ScheduleRemoteDataSource {
       },
       body: scheduleModelToJson(params),
     );
-    debugPrint("Response body: ${response.body}");
-    debugPrint("Response status: ${response.statusCode}");
 
     if (response.statusCode == 201) {
       return scheduleModelFromRemoteJson(response.body);
     } else {
       throw ServerException();
     }
-  }
-
-  @override
-  Future<ScheduleModel> updateSchedule(ScheduleModel params, String token) {
-    // TODO: implement updateSchedule
-    throw UnimplementedError();
   }
 
   @override
@@ -64,8 +54,6 @@ class HttpScheduleRemoteDataSource implements ScheduleRemoteDataSource {
         'Authorization': 'Bearer $token',
       },
     );
-    debugPrint("Response body: ${response.body}");
-    debugPrint("Response status: ${response.statusCode}");
 
     if (response.statusCode == 200) {
       return scheduleModelListFromRemoteJson(response.body);

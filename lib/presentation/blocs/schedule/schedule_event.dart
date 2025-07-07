@@ -8,12 +8,6 @@ class BookScheduleEvent extends ScheduleEvent {
   BookScheduleEvent(this.params);
 }
 
-class UpdateScheduleEvent extends ScheduleEvent {
-  final Schedule schedule;
-
-  UpdateScheduleEvent(this.schedule);
-}
-
 class GetSchedulesByUserEvent extends ScheduleEvent {
   final ScheduleModel params;
 

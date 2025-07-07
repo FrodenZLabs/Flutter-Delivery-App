@@ -60,7 +60,10 @@ class AppRouter {
           builder: (_) => ServiceDetailsView(service: service),
         );
       case ratings:
-        return MaterialPageRoute(builder: (_) => const RatingServiceView());
+        ScheduleModel schedule = routeSettings.arguments as ScheduleModel;
+        return MaterialPageRoute(
+          builder: (_) => RatingServiceView(schedule: schedule),
+        );
       case schedule:
         Service service = routeSettings.arguments as Service;
         return MaterialPageRoute(

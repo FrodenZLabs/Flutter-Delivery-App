@@ -1,8 +1,9 @@
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_delivery_app/data/data_sources/local/user_local_data_source.dart';
 import 'package:flutter_delivery_app/domain/entities/rating/rating.dart';
-import 'package:flutter_delivery_app/domain/usecases/rating/add_rating.dart';
-import 'package:flutter_delivery_app/domain/usecases/rating/get_rating_by_user_id.dart';
+import 'package:flutter_delivery_app/domain/usecases/rating/add_rating_use_case.dart';
+import 'package:flutter_delivery_app/domain/usecases/rating/check_rating_use_case.dart';
 import 'package:injectable/injectable.dart';
 
 part 'rating_event.dart';
@@ -10,38 +11,62 @@ part 'rating_state.dart';
 
 @injectable
 class RatingBloc extends Bloc<RatingEvent, RatingState> {
-  final AddRating addRating;
-  final GetRatingsByUser getRatingsByUser;
+  final AddRatingUseCase addRatingUseCase;
+  final CheckRatingUseCase checkRatingUseCase;
+  final UserLocalDataSource userLocalDataSource;
 
-  RatingBloc({required this.addRating, required this.getRatingsByUser})
-    : super(RatingInitial()) {
+  RatingBloc(
+    this.addRatingUseCase,
+    this.checkRatingUseCase,
+    this.userLocalDataSource,
+  ) : super(RatingInitial()) {
     on<AddRatingEvent>(_onAddRating);
-    on<GetUserRatingsEvent>(_onGetUserRatings);
+    on<CheckRatingsEvent>(_onCheckRatings);
   }
 
   Future<void> _onAddRating(
     AddRatingEvent event,
     Emitter<RatingState> emit,
   ) async {
-    emit(RatingLoading());
     try {
-      await addRating(event.rating);
-      emit(RatingSuccess("Rating submitted successfully"));
+      emit(RatingAddLoading());
+
+      final result = await addRatingUseCase(event.params);
+      result.fold(
+        (failure) => emit(RatingAddFailure()),
+        (rating) => emit(RatingAddSuccess(rating)),
+      );
     } catch (e) {
-      emit(RatingFailure(e.toString()));
+      emit(RatingAddFailure());
     }
   }
 
-  Future<void> _onGetUserRatings(
-    GetUserRatingsEvent event,
+  Future<void> _onCheckRatings(
+    CheckRatingsEvent event,
     Emitter<RatingState> emit,
   ) async {
-    emit(RatingLoading());
     try {
-      final ratings = await getRatingsByUser(event.userId);
-      emit(RatingLoaded(ratings));
+      emit(RatingCheckLoading());
+
+      debugPrint("Params: ${event.params}");
+      final result = await checkRatingUseCase(event.params);
+      debugPrint("Result: $result");
+      result.fold((failure) => emit(RatingCheckFailure()), (response) {
+        if (response.alreadyRated && response.rating != null) {
+          // Case when rating already exists
+          emit(RatingExistingSuccess(response.rating!));
+        } else {
+          // Case when checking eligibility
+          emit(
+            RatingCheckSuccess(
+              canRate: response.canRate,
+              currentStatus: response.currentStatus,
+            ),
+          );
+        }
+      });
     } catch (e) {
-      emit(RatingFailure(e.toString()));
+      emit(RatingCheckFailure());
     }
   }
 }

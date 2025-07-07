@@ -1,38 +1,30 @@
 part of 'rating_bloc.dart';
 
-abstract class RatingState extends Equatable {
-  const RatingState();
-
-  @override
-  List<Object?> get props => [];
-}
+abstract class RatingState {}
 
 class RatingInitial extends RatingState {}
 
-class RatingLoading extends RatingState {}
+class RatingAddLoading extends RatingState {}
 
-class RatingSuccess extends RatingState {
-  final String message;
-  const RatingSuccess(this.message);
+class RatingCheckLoading extends RatingState {}
 
-  @override
-  List<Object?> get props => [message];
+class RatingAddSuccess extends RatingState {
+  final Rating rating;
+
+  RatingAddSuccess(this.rating);
 }
 
-class RatingFailure extends RatingState {
-  final String error;
-
-  const RatingFailure(this.error);
-
-  @override
-  List<Object?> get props => [error];
+class RatingCheckSuccess extends RatingState {
+  final bool canRate;
+  final String currentStatus;
+  RatingCheckSuccess({required this.canRate, required this.currentStatus});
 }
 
-class RatingLoaded extends RatingState {
-  final List<Rating> ratings;
-
-  const RatingLoaded(this.ratings);
-
-  @override
-  List<Object?> get props => [ratings];
+class RatingExistingSuccess extends RatingState {
+  final Rating rating;
+  RatingExistingSuccess(this.rating);
 }
+
+class RatingAddFailure extends RatingState {}
+
+class RatingCheckFailure extends RatingState {}

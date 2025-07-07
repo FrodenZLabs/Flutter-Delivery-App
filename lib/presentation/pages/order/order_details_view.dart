@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
 import 'package:flutter_delivery_app/core/constants/images.dart';
+import 'package:flutter_delivery_app/core/router/app_router.dart';
 import 'package:flutter_delivery_app/data/models/schedule/schedule_model.dart';
 import 'package:intl/intl.dart';
 import 'package:toastification/toastification.dart';
@@ -15,12 +16,10 @@ class OrderDetailsView extends StatefulWidget {
 }
 
 class _OrderDetailsViewState extends State<OrderDetailsView> {
-  final dummyDriver = {
-    'name': 'John Doe',
-    'image': kMaleAvatar,
-    'vehicle': 'Blue Sedan',
-    'plate': 'KDA 123A',
-  };
+  bool get _isDeliveredOrCompleted {
+    final status = widget.schedule.status.toLowerCase();
+    return status == 'delivered' || status == 'completed';
+  }
 
   List<Map<String, dynamic>> _getDeliveryStages(String status) {
     final statusLower = status.toLowerCase();
@@ -418,6 +417,34 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
             const SizedBox(height: 20),
 
             _buildDriverInfo(),
+            const SizedBox(height: 10),
+
+            if (_isDeliveredOrCompleted)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(
+                      context,
+                    ).pushNamed(AppRouter.ratings, arguments: widget.schedule);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text(
+                    'RATE THIS DELIVERY',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
             const SizedBox(height: 20),
           ],
         ),

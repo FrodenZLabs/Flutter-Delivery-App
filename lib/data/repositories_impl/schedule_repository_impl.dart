@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/error/exceptions.dart';
 import 'package:flutter_delivery_app/core/error/failures.dart';
 import 'package:flutter_delivery_app/core/network/network_info.dart';
@@ -55,44 +54,25 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   Future<Either<Failure, List<Schedule>>> getSchedulesByUser(
     ScheduleModel params,
   ) async {
-    debugPrint('===== getSchedulesByUser START =====');
-    debugPrint('Params: ${params.toJson()}');
-
-    debugPrint('Network connected: ${networkInfo.isConnected}');
     if (!await networkInfo.isConnected) {
-      debugPrint('Returning NetworkFailure');
       return Left(NetworkFailure());
     }
 
     final token = await userLocalDataSource.getToken();
     final userId = await userLocalDataSource.getUserId();
-    debugPrint('Token exists: ${token.isNotEmpty}');
-    debugPrint('User ID: $userId');
     if (token.isEmpty) {
-      debugPrint('Returning AuthenticationFailure');
       return Left(AuthenticationFailure());
     }
 
     try {
-      debugPrint('Calling remote.getSchedulesInfo...');
       final remoteServices = await remote.getSchedulesInfo(
         params,
         userId,
         token,
       );
-      debugPrint('Received ${remoteServices.length} schedules from remote');
-      debugPrint(
-        'First schedule (if any): ${remoteServices.isNotEmpty ? remoteServices.first.toJson() : "N/A"}',
-      );
-      debugPrint('Caching schedules locally...');
       local.cacheSchedule(remoteServices);
-      debugPrint('Caching completed');
-      debugPrint('Returning Right with ${remoteServices.length} schedules');
       return Right(remoteServices);
     } on ServerException catch (e) {
-      debugPrint('ServerException caught:');
-      debugPrint('- Type: ${e.runtimeType}');
-      debugPrint('- Message: ${e.toString()}');
       return Left(ServerFailure());
     }
   }

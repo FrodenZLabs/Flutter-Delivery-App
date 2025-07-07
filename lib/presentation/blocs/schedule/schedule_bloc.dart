@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/data/data_sources/local/user_local_data_source.dart';
 import 'package:flutter_delivery_app/data/models/schedule/schedule_model.dart';
 import 'package:flutter_delivery_app/domain/entities/schedule/schedule.dart';
@@ -58,7 +57,6 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 
       final result = await _getSchedulesByUserUseCase(updatedParams);
 
-      debugPrint("Result: $result");
       result.fold((failure) => emit(ScheduleFetchFail()), (schedules) {
         final models = schedules.map((s) => s as ScheduleModel).toList();
         emit(ScheduleFetchSuccess(models));

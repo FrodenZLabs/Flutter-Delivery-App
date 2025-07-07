@@ -20,8 +20,6 @@ import 'package:flutter_delivery_app/data/data_sources/local/user_local_data_sou
     as _i943;
 import 'package:flutter_delivery_app/data/data_sources/remote/delivery_info_remote_data_source.dart'
     as _i596;
-import 'package:flutter_delivery_app/data/data_sources/remote/driver_remote_data_source.dart'
-    as _i147;
 import 'package:flutter_delivery_app/data/data_sources/remote/rating_remote_data_source.dart'
     as _i407;
 import 'package:flutter_delivery_app/data/data_sources/remote/schedule_remote_data_source.dart'
@@ -34,8 +32,6 @@ import 'package:flutter_delivery_app/data/models/service/service_model.dart'
     as _i506;
 import 'package:flutter_delivery_app/data/repositories_impl/delivery_info_repository_impl.dart'
     as _i74;
-import 'package:flutter_delivery_app/data/repositories_impl/driver_repository_impl.dart'
-    as _i256;
 import 'package:flutter_delivery_app/data/repositories_impl/rating_repository_impl.dart'
     as _i653;
 import 'package:flutter_delivery_app/data/repositories_impl/schedule_repository_impl.dart'
@@ -46,8 +42,6 @@ import 'package:flutter_delivery_app/data/repositories_impl/user_repository_impl
     as _i1026;
 import 'package:flutter_delivery_app/domain/repositories/delivery/delivery_info_repository.dart'
     as _i993;
-import 'package:flutter_delivery_app/domain/repositories/driver/driver_repository.dart'
-    as _i16;
 import 'package:flutter_delivery_app/domain/repositories/rating/rating_repository.dart'
     as _i56;
 import 'package:flutter_delivery_app/domain/repositories/schedule/schedule_repository.dart'
@@ -70,14 +64,10 @@ import 'package:flutter_delivery_app/domain/usecases/delivery/get_selected_deliv
     as _i1016;
 import 'package:flutter_delivery_app/domain/usecases/delivery/select_delivery_info_use_case.dart'
     as _i298;
-import 'package:flutter_delivery_app/domain/usecases/driver/get_driver_by_id.dart'
-    as _i436;
-import 'package:flutter_delivery_app/domain/usecases/driver/get_drivers_by_service_id.dart'
-    as _i714;
-import 'package:flutter_delivery_app/domain/usecases/rating/add_rating.dart'
-    as _i345;
-import 'package:flutter_delivery_app/domain/usecases/rating/get_rating_by_user_id.dart'
-    as _i207;
+import 'package:flutter_delivery_app/domain/usecases/rating/add_rating_use_case.dart'
+    as _i217;
+import 'package:flutter_delivery_app/domain/usecases/rating/check_rating_use_case.dart'
+    as _i351;
 import 'package:flutter_delivery_app/domain/usecases/schedule/book_schedule_use_case.dart'
     as _i616;
 import 'package:flutter_delivery_app/domain/usecases/schedule/get_schedules_by_user_use_case.dart'
@@ -98,8 +88,6 @@ import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_a
     as _i448;
 import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_fetch/delivery_info_fetch_cubit.dart'
     as _i346;
-import 'package:flutter_delivery_app/presentation/blocs/driver/driver_bloc.dart'
-    as _i289;
 import 'package:flutter_delivery_app/presentation/blocs/filter/filter_cubit.dart'
     as _i669;
 import 'package:flutter_delivery_app/presentation/blocs/home/navbar_cubit.dart'
@@ -161,8 +149,6 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i423.NetworkInfoImpl(gh<_i973.InternetConnectionChecker>()));
     gh.lazySingleton<_i407.RatingRemoteDataSource>(
         () => _i407.HttpRatingRemoteDataSource(gh<_i519.Client>()));
-    gh.lazySingleton<_i147.DriverRemoteDataSource>(
-        () => _i147.HttpDriverRemoteDataSource(gh<_i519.Client>()));
     gh.lazySingleton<_i1047.ServiceRemoteDataSource>(
         () => _i1047.HttpServiceRemoteDataSource(gh<_i519.Client>()));
     gh.lazySingleton<_i24.ScheduleRepository>(
@@ -172,19 +158,31 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i423.NetworkInfo>(),
               gh<_i943.UserLocalDataSource>(),
             ));
-    gh.lazySingleton<_i108.UpdateSchedule>(
-        () => _i108.UpdateSchedule(gh<_i24.ScheduleRepository>()));
     gh.lazySingleton<_i616.BookScheduleUseCase>(
         () => _i616.BookScheduleUseCase(gh<_i24.ScheduleRepository>()));
     gh.lazySingleton<_i330.GetSchedulesByUserUseCase>(
         () => _i330.GetSchedulesByUserUseCase(gh<_i24.ScheduleRepository>()));
+    gh.lazySingleton<_i108.UpdateSchedule>(
+        () => _i108.UpdateSchedule(gh<_i24.ScheduleRepository>()));
     gh.lazySingleton<_i14.UserRepository>(() => _i1026.UserRepositoryImpl(
           gh<_i1038.UserRemoteDataSource>(),
           gh<_i943.UserLocalDataSource>(),
           gh<_i423.NetworkInfo>(),
         ));
-    gh.lazySingleton<_i16.DriverRepository>(
-        () => _i256.DriverRepositoryImpl(gh<_i147.DriverRemoteDataSource>()));
+    gh.lazySingleton<_i56.RatingRepository>(() => _i653.RatingRepositoryImpl(
+          gh<_i407.RatingRemoteDataSource>(),
+          gh<_i423.NetworkInfo>(),
+          gh<_i943.UserLocalDataSource>(),
+        ));
+    gh.lazySingleton<_i217.AddRatingUseCase>(
+        () => _i217.AddRatingUseCase(gh<_i56.RatingRepository>()));
+    gh.lazySingleton<_i351.CheckRatingUseCase>(
+        () => _i351.CheckRatingUseCase(gh<_i56.RatingRepository>()));
+    gh.factory<_i244.RatingBloc>(() => _i244.RatingBloc(
+          gh<_i217.AddRatingUseCase>(),
+          gh<_i351.CheckRatingUseCase>(),
+          gh<_i943.UserLocalDataSource>(),
+        ));
     gh.lazySingleton<_i993.DeliveryInfoRepository>(
         () => _i74.DeliveryInfoRepositoryImpl(
               gh<_i596.DeliveryInfoRemoteDataSource>(),
@@ -199,14 +197,6 @@ extension GetItInjectableX on _i174.GetIt {
         ));
     gh.lazySingleton<_i327.GetServiceUseCase>(
         () => _i327.GetServiceUseCase(gh<_i591.ServiceRepository>()));
-    gh.lazySingleton<_i56.RatingRepository>(
-        () => _i653.RatingRepositoryImpl(gh<_i407.RatingRemoteDataSource>()));
-    gh.lazySingleton<_i714.GetDriversByServiceId>(
-        () => _i714.GetDriversByServiceId(gh<_i16.DriverRepository>()));
-    gh.lazySingleton<_i436.GetDriverById>(
-        () => _i436.GetDriverById(gh<_i16.DriverRepository>()));
-    gh.factory<_i289.DriverBloc>(
-        () => _i289.DriverBloc(gh<_i16.DriverRepository>()));
     gh.lazySingleton<_i904.AddDeliveryInfoUseCase>(
         () => _i904.AddDeliveryInfoUseCase(gh<_i993.DeliveryInfoRepository>()));
     gh.lazySingleton<_i293.DeleteLocalDeliveryInfoUseCase>(() =>
@@ -243,16 +233,8 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i1016.GetSelectedDeliveryInfoUseCase>(),
           gh<_i293.DeleteLocalDeliveryInfoUseCase>(),
         ));
-    gh.lazySingleton<_i345.AddRating>(
-        () => _i345.AddRating(gh<_i56.RatingRepository>()));
-    gh.lazySingleton<_i207.GetRatingsByUser>(
-        () => _i207.GetRatingsByUser(gh<_i56.RatingRepository>()));
     gh.factory<_i367.ServiceBloc>(
         () => _i367.ServiceBloc(gh<_i327.GetServiceUseCase>()));
-    gh.factory<_i244.RatingBloc>(() => _i244.RatingBloc(
-          addRating: gh<_i345.AddRating>(),
-          getRatingsByUser: gh<_i207.GetRatingsByUser>(),
-        ));
     gh.factory<_i448.DeliveryInfoActionCubit>(
         () => _i448.DeliveryInfoActionCubit(
               gh<_i904.AddDeliveryInfoUseCase>(),

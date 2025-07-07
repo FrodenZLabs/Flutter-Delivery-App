@@ -47,13 +47,11 @@ class DeliveryInfoActionCubit extends Cubit<DeliveryInfoActionState> {
       final updatedParams = params.copyWith(userId: userId);
 
       final result = await _editDeliveryInfoUseCase(updatedParams);
-      debugPrint("Delivery Info Cubit: $result");
       result.fold(
         (failure) => emit(DeliveryInfoActionFail()),
         (deliveryInfo) => emit(DeliveryInfoEditActionSuccess(deliveryInfo)),
       );
     } catch (e) {
-      debugPrint("Error: $e");
       emit(DeliveryInfoActionFail());
     }
   }

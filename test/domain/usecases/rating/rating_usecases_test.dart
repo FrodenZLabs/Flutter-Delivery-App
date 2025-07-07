@@ -1,6 +1,6 @@
 import 'package:flutter_delivery_app/domain/entities/rating/rating.dart';
-import 'package:flutter_delivery_app/domain/usecases/rating/add_rating.dart';
-import 'package:flutter_delivery_app/domain/usecases/rating/get_rating_by_user_id.dart';
+import 'package:flutter_delivery_app/domain/usecases/rating/add_rating_use_case.dart';
+import 'package:flutter_delivery_app/domain/usecases/rating/check_rating_use_case.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
