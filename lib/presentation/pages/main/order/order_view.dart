@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
 import 'package:flutter_delivery_app/core/constants/images.dart';
+import 'package:flutter_delivery_app/core/router/app_router.dart';
 import 'package:flutter_delivery_app/data/models/schedule/schedule_model.dart';
 import 'package:flutter_delivery_app/presentation/blocs/schedule/schedule_bloc.dart';
 import 'package:intl/intl.dart';
@@ -130,7 +131,9 @@ class _OrderViewState extends State<OrderView>
             ),
           ),
           onTap: () {
-            // TODO: Navigate to order details
+            Navigator.of(
+              context,
+            ).pushNamed(AppRouter.orderDetails, arguments: schedule);
           },
         );
       },

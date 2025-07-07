@@ -1,66 +1,274 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
 import 'package:flutter_delivery_app/core/constants/images.dart';
-import 'package:flutter_delivery_app/domain/entities/schedule/schedule.dart';
+import 'package:flutter_delivery_app/data/models/schedule/schedule_model.dart';
+import 'package:intl/intl.dart';
+import 'package:toastification/toastification.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class OrderDetailsView extends StatelessWidget {
-  final Schedule schedule;
+class OrderDetailsView extends StatefulWidget {
+  final ScheduleModel schedule;
   const OrderDetailsView({super.key, required this.schedule});
 
   @override
-  Widget build(BuildContext context) {
-    // Dummy Data for testing
-    final dummyService = {
-      'name': 'Laundry Service',
-      'subName': 'Same-day laundry and delivery',
-      'image': kLaundry,
-    };
+  State<OrderDetailsView> createState() => _OrderDetailsViewState();
+}
 
-    final dummyDeliveryInfo = {
-      'address': '123 K-Labs Street',
-      'city': 'Nairobi',
-      'contact': '+254712345678',
-    };
+class _OrderDetailsViewState extends State<OrderDetailsView> {
+  final dummyDriver = {
+    'name': 'John Doe',
+    'image': kMaleAvatar,
+    'vehicle': 'Blue Sedan',
+    'plate': 'KDA 123A',
+  };
 
-    final dummyDriver = {
-      'name': 'John Doe',
-      'image': kMaleAvatar,
-      'vehicle': 'Blue Sedan',
-      'plate': 'KDA 123A',
-    };
+  List<Map<String, dynamic>> _getDeliveryStages(String status) {
+    final statusLower = status.toLowerCase();
+    final now = DateFormat('dd MMMM y, h:mm a').format(DateTime.now());
 
-    final List<Map<String, dynamic>> deliveryStages = [
+    return [
       {
         'title': 'Pending',
         'completed': true,
         'icon': Icons.hourglass_empty,
-        'time': '26 June 2025, 8:00 AM',
+        'time': now,
       },
       {
         'title': 'Order Placed',
-        'completed': true,
+        'completed': statusLower != 'pending',
         'icon': Icons.shopping_cart,
-        'time': '26 June 2025, 8:10 AM',
+        'time': now,
       },
       {
         'title': 'Driver Assigned',
-        'completed': true,
+        'completed':
+            statusLower.contains('assigned') ||
+            statusLower.contains('transit') ||
+            statusLower.contains('delivered') ||
+            statusLower.contains('completed'),
         'icon': Icons.person_pin_circle,
-        'time': '26 June 2025, 8:30 AM',
+        'time': statusLower.contains('assigned') ? now : null,
       },
       {
         'title': 'In Transit',
-        'completed': false,
+        'completed':
+            statusLower.contains('transit') ||
+            statusLower.contains('delivered') ||
+            statusLower.contains('completed'),
         'icon': Icons.local_shipping,
-        'time': null, // Not yet updated
+        'time': statusLower.contains('transit') ? now : null,
       },
       {
         'title': 'Delivered',
-        'completed': false,
+        'completed':
+            statusLower.contains('delivered') ||
+            statusLower.contains('completed'),
         'icon': Icons.check_circle,
-        'time': null,
+        'time': statusLower.contains('delivered') ? now : null,
       },
     ];
+  }
+
+  Widget _buildDriverInfo() {
+    Future<void> makePhoneCall(String phoneNumber) async {
+      final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
+      if (await canLaunchUrl(launchUri)) {
+        await launchUrl(launchUri);
+      } else {
+        throw 'Could not launch $launchUri';
+      }
+    }
+
+    Future<void> sendSms(String phoneNumber) async {
+      final Uri launchUri = Uri(
+        scheme: 'sms',
+        path: phoneNumber,
+        queryParameters: {'body': 'Hello driver, regarding my delivery...'},
+      );
+      if (await canLaunchUrl(launchUri)) {
+        await launchUrl(launchUri);
+      } else {
+        throw 'Could not launch $launchUri';
+      }
+    }
+
+    if (widget.schedule.driverId == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Driver Information',
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            width: double.infinity, // Stretches to full width
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.red.shade50, // Light red background
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.red.shade200, width: 1),
+            ),
+            child: Text(
+              'No driver assigned yet',
+              style: TextStyle(color: Colors.red.shade800, fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ✅ Driver Info
+        const Text(
+          'Driver Information',
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+        ),
+        const SizedBox(height: 8),
+
+        // Row for Image and Name
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(40),
+              child: Image.asset(
+                kMaleAvatar,
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.schedule.driverName!,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  Text(
+                    "Driver",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w300,
+                      color: Colors.brown,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+
+        // Vehicle and Contact Info
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.directions_car, size: 22, color: Colors.grey),
+                const SizedBox(width: 10),
+                Text(
+                  'Vehicle: ${widget.schedule.vehicleInfo}',
+                  style: const TextStyle(fontSize: 15),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                const Icon(Icons.phone, size: 22, color: Colors.grey),
+                const SizedBox(width: 10),
+                Text(
+                  'Contact: ${widget.schedule.driverContact}',
+                  style: const TextStyle(fontSize: 15),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+
+        // ✅ Contact Driver Buttons
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  if (widget.schedule.driverContact != null &&
+                      widget.schedule.driverContact!.isNotEmpty) {
+                    makePhoneCall(widget.schedule.driverContact!);
+                  } else {
+                    // ✅ Show toast
+                    toastification.show(
+                      context: context,
+                      title: Text("Contact Error"),
+                      description: Text("Driver contact number not available"),
+                      type: ToastificationType.error,
+                      style: ToastificationStyle.minimal,
+                      autoCloseDuration: const Duration(seconds: 10),
+                      dragToClose: true,
+                    );
+                  }
+                },
+                icon: const Icon(Icons.call, color: Colors.white),
+                label: const Text(
+                  'Call',
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kSecondaryColor,
+                ),
+              ),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  if (widget.schedule.driverContact != null &&
+                      widget.schedule.driverContact!.isNotEmpty) {
+                    sendSms(widget.schedule.driverContact!);
+                  } else {
+                    // ✅ Show toast
+                    toastification.show(
+                      context: context,
+                      title: Text("Contact Error"),
+                      description: Text("Driver contact number not available"),
+                      type: ToastificationType.error,
+                      style: ToastificationStyle.minimal,
+                      autoCloseDuration: const Duration(seconds: 10),
+                      dragToClose: true,
+                    );
+                  }
+                },
+                icon: const Icon(Icons.message, color: Colors.black54),
+                label: const Text(
+                  'Message',
+                  style: TextStyle(color: Colors.black54),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey.shade300,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final deliveryStages = _getDeliveryStages(widget.schedule.status);
 
     return Scaffold(
       appBar: AppBar(
@@ -86,7 +294,7 @@ class OrderDetailsView extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.asset(
-                    dummyService['image']!,
+                    kDryCleaning,
                     width: 80,
                     height: 80,
                     fit: BoxFit.cover,
@@ -98,7 +306,7 @@ class OrderDetailsView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        dummyService['name']!,
+                        widget.schedule.serviceId,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -106,7 +314,7 @@ class OrderDetailsView extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        dummyService['subName']!,
+                        'Order #${widget.schedule.id}',
                         style: const TextStyle(
                           color: Colors.brown,
                           fontSize: 18,
@@ -126,7 +334,9 @@ class OrderDetailsView extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
             ),
             const SizedBox(height: 4),
-            const Text('26th June 2025 at 10:00 AM'),
+            Text(
+              '${DateFormat('dd MMMM y').format(widget.schedule.scheduleDate)} at ${widget.schedule.scheduleTime}',
+            ),
 
             const SizedBox(height: 12),
             const Text(
@@ -134,10 +344,8 @@ class OrderDetailsView extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
             ),
             const SizedBox(height: 4),
-            Text(
-              '${dummyDeliveryInfo['address']}, ${dummyDeliveryInfo['city']}',
-            ),
-            Text('Contact: ${dummyDeliveryInfo['contact']}'),
+            Text('address city'),
+            Text('Contact: contact'),
 
             const SizedBox(height: 20),
 
@@ -156,7 +364,6 @@ class OrderDetailsView extends StatelessWidget {
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ✅ Icon and line
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -174,7 +381,6 @@ class OrderDetailsView extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(width: 16),
-                    // ✅ Stage title and time
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 6),
@@ -211,126 +417,7 @@ class OrderDetailsView extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // ✅ Driver Info
-            const Text(
-              'Driver Information',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
-            ),
-            const SizedBox(height: 8),
-
-            // Row for Image and Name
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(40),
-                  child: Image.asset(
-                    dummyDriver['image']!,
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        dummyDriver['name']!,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      Text(
-                        "Driver",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w300,
-                          color: Colors.brown,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-
-            // Vehicle and Plate Row (on a new line)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.directions_car,
-                      size: 22,
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Vehicle: ${dummyDriver['vehicle']!}',
-                      style: TextStyle(fontSize: 15),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.confirmation_number,
-                      size: 22,
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Plate: ${dummyDriver['plate']}',
-                      style: TextStyle(fontSize: 15),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // ✅ Contact Driver Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      print('Calling driver...');
-                    },
-                    icon: const Icon(Icons.call, color: Colors.white),
-                    label: const Text(
-                      'Call',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: kSecondaryColor,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      print('Messaging driver...');
-                    },
-                    icon: const Icon(Icons.message, color: Colors.black54),
-                    label: const Text(
-                      'Message',
-                      style: TextStyle(color: Colors.black54),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey.shade300,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            _buildDriverInfo(),
             const SizedBox(height: 20),
           ],
         ),

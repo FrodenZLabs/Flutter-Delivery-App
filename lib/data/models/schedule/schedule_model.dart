@@ -48,6 +48,21 @@ class ScheduleModel extends Schedule {
   @override
   final String status;
 
+  @HiveField(7)
+  final String? driverId;
+
+  @HiveField(8)
+  final String? driverName;
+
+  @HiveField(9)
+  final String? driverImage;
+
+  @HiveField(10)
+  final String? driverContact;
+
+  @HiveField(11)
+  final String? vehicleInfo;
+
   ScheduleModel({
     required this.id,
     required this.userId,
@@ -56,6 +71,11 @@ class ScheduleModel extends Schedule {
     required this.scheduleDate,
     required this.scheduleTime,
     required this.status,
+    this.driverId,
+    this.driverName,
+    this.driverImage,
+    this.driverContact,
+    this.vehicleInfo,
   }) : super(
          id: id,
          userId: userId,
@@ -74,6 +94,11 @@ class ScheduleModel extends Schedule {
     scheduleDate: DateTime.parse(json['scheduleDate']),
     scheduleTime: json['scheduleTime'],
     status: json['status'],
+    driverId: json['driverId'],
+    driverName: json['driverName'],
+    driverImage: json['driverImage'],
+    driverContact: json['driverContact'],
+    vehicleInfo: json['vehicleInfo'],
   );
 
   Map<String, dynamic> toJson() => {
@@ -84,6 +109,11 @@ class ScheduleModel extends Schedule {
     'scheduleDate': scheduleDate.toIso8601String(),
     'scheduleTime': scheduleTime,
     'status': status,
+    'driverId': driverId,
+    'driverName': driverName,
+    'driverImage': driverImage,
+    'driverContact': driverContact,
+    'vehicleInfo': vehicleInfo,
   };
 
   ScheduleModel copyWith({
