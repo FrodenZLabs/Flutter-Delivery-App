@@ -32,7 +32,9 @@ class DeliveryInfoFetchSuccess extends DeliveryInfoFetchState {
 }
 
 class DeliveryInfoFetchFail extends DeliveryInfoFetchState {
+  final Failure failure;
   const DeliveryInfoFetchFail({
+    required this.failure,
     required super.deliveryInformation,
     super.selectedDeliveryInformation,
   });

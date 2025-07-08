@@ -11,6 +11,7 @@ import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_a
 import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_fetch/delivery_info_fetch_cubit.dart';
 import 'package:flutter_delivery_app/presentation/blocs/filter/filter_cubit.dart';
 import 'package:flutter_delivery_app/presentation/blocs/home/navbar_cubit.dart';
+import 'package:flutter_delivery_app/presentation/blocs/popular_service/popular_service_bloc.dart';
 import 'package:flutter_delivery_app/presentation/blocs/rating/rating_bloc.dart';
 import 'package:flutter_delivery_app/presentation/blocs/schedule/schedule_bloc.dart';
 import 'package:flutter_delivery_app/presentation/blocs/service/service_bloc.dart';
@@ -50,6 +51,7 @@ class DeliveryApp extends StatelessWidget {
         BlocProvider(create: (context) => getIt<NavbarCubit>()),
         BlocProvider(create: (context) => getIt<FilterServiceCubit>()),
         BlocProvider(create: (context) => getIt<ServiceBloc>()),
+        BlocProvider(create: (context) => getIt<PopularServicesBloc>()),
         BlocProvider(create: (context) => getIt<DeliveryInfoActionCubit>()),
         BlocProvider(create: (context) => getIt<DeliveryInfoFetchCubit>()),
         BlocProvider(create: (context) => getIt<UserBloc>()),

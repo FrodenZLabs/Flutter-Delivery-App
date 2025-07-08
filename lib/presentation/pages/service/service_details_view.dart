@@ -1,11 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
 import 'package:flutter_delivery_app/core/router/app_router.dart';
 import 'package:flutter_delivery_app/domain/entities/service/service.dart';
 import 'package:flutter_delivery_app/presentation/widgets/input_form_button.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:toastification/toastification.dart';
 
 class ServiceDetailsView extends StatefulWidget {
   final Service service;
@@ -37,7 +40,31 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
         backgroundColor: kBackgroundColor,
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.message)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.share)),
+          IconButton(
+            onPressed: () async {
+              final String shareLink =
+                  'https://yourdomain.com/services/${widget.service.id}';
+
+              await Clipboard.setData(ClipboardData(text: shareLink));
+              // ✅ Show toast
+              toastification.show(
+                context: context,
+                title: Text("Copy Success"),
+                description: Text("Link copied to clipboard"),
+                type: ToastificationType.success,
+                style: ToastificationStyle.minimal,
+                autoCloseDuration: const Duration(seconds: 10),
+                dragToClose: true,
+              );
+
+              await SharePlus.instance.share(
+                ShareParams(
+                  text: 'Check out this service on MyDeliveryApp: $shareLink',
+                ),
+              );
+            },
+            icon: Icon(Icons.share),
+          ),
         ],
       ),
       backgroundColor: kBackgroundColor,
@@ -208,9 +235,25 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                 width: double.infinity,
                 child: InputFormButton(
                   onClick: () {
-                    Navigator.of(
-                      context,
-                    ).pushNamed(AppRouter.schedule, arguments: widget.service);
+                    if (widget.service.available) {
+                      Navigator.of(context).pushNamed(
+                        AppRouter.schedule,
+                        arguments: widget.service,
+                      );
+                    } else {
+                      // ✅ Show toast
+                      toastification.show(
+                        context: context,
+                        title: Text("Service Error"),
+                        description: Text(
+                          "This service is currently not available! Please try again later!",
+                        ),
+                        type: ToastificationType.error,
+                        style: ToastificationStyle.minimal,
+                        autoCloseDuration: const Duration(seconds: 10),
+                        dragToClose: true,
+                      );
+                    }
                   },
                   titleText: 'Book Delivery',
                 ),

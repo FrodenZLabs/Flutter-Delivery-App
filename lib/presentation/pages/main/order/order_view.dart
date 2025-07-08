@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
 import 'package:flutter_delivery_app/core/constants/images.dart';
+import 'package:flutter_delivery_app/core/error/failures.dart';
 import 'package:flutter_delivery_app/core/router/app_router.dart';
 import 'package:flutter_delivery_app/data/models/schedule/schedule_model.dart';
+import 'package:flutter_delivery_app/presentation/blocs/home/navbar_cubit.dart';
 import 'package:flutter_delivery_app/presentation/blocs/schedule/schedule_bloc.dart';
+import 'package:flutter_delivery_app/presentation/widgets/alert_card.dart';
 import 'package:intl/intl.dart';
 
 class OrderView extends StatefulWidget {
@@ -166,22 +169,85 @@ class _OrderViewState extends State<OrderView>
         backgroundColor: Colors.brown.shade50,
       ),
       backgroundColor: kBackgroundColor,
-      body: BlocBuilder<ScheduleBloc, ScheduleState>(
-        builder: (context, state) {
-          if (state is ScheduleFetchFail) {
-            return Center(child: Text('Failed to load orders: $state'));
-          } else if (state is ScheduleFetchSuccess) {
-            return TabBarView(
-              controller: _tabController,
-              children: [
-                buildOrderList(state.schedule, 'Pending'),
-                buildOrderList(state.schedule, 'Completed'),
-                buildOrderList(state.schedule, 'Canceled'),
-              ],
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: BlocBuilder<ScheduleBloc, ScheduleState>(
+          builder: (context, state) {
+            if (state is ScheduleFetchFail) {
+              if (state.failure is NetworkFailure) {
+                return AlertCard(
+                  image: kNoConnection,
+                  message: "Network failure.\n Check internet connection!",
+                  onClick: () {
+                    context.read<ScheduleBloc>().add(
+                      GetSchedulesByUserEvent(
+                        ScheduleModel(
+                          id: '',
+                          userId: '',
+                          serviceId: '',
+                          deliveryInfoId: '',
+                          scheduleDate: DateTime.now(),
+                          scheduleTime: '',
+                          status: '',
+                        ),
+                      ),
+                    );
+                  },
+                );
+              } else if (state.failure is ServerFailure) {
+                return Column(
+                  // mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AlertCard(
+                      image: kEmpty,
+                      message:
+                          "No Orders Found.\n You haven't placed any orders yet",
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<NavbarCubit>().update(1);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: kSecondaryColor,
+                        // padding: const EdgeInsets.symmetric(vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text(
+                        "Explore Services",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+                  ],
+                );
+              }
+            } else if (state is ScheduleFetchLoading) {
+              return const Center(
+                child: CircularProgressIndicator(color: Colors.brown),
+              );
+            } else if (state is ScheduleFetchSuccess) {
+              return TabBarView(
+                controller: _tabController,
+                children: [
+                  buildOrderList(state.schedule, 'Pending'),
+                  buildOrderList(state.schedule, 'Completed'),
+                  buildOrderList(state.schedule, 'Canceled'),
+                ],
+              );
+            }
+            return AlertCard(
+              image: kEmpty,
+              message: "Session token expired.\n Please Login!",
             );
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
+          },
+        ),
       ),
     );
   }

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/constants/strings.dart';
 import 'package:flutter_delivery_app/core/error/exceptions.dart';
 import 'package:flutter_delivery_app/data/models/rating/rating_model.dart';
@@ -23,7 +22,7 @@ class HttpRatingRemoteDataSource implements RatingRemoteDataSource {
   @override
   Future<RatingModel> addRating(RatingParams params, String token) async {
     final response = await client.post(
-      Uri.parse('$baseUrl/schedules/add'),
+      Uri.parse('$baseUrl/ratings/add'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -34,8 +33,6 @@ class HttpRatingRemoteDataSource implements RatingRemoteDataSource {
         'comment': params.comment,
       }),
     );
-    debugPrint("Response body: ${response.body}");
-    debugPrint("Response status: ${response.statusCode}");
 
     if (response.statusCode == 201) {
       return ratingModelFromRemoteJson(response.body);
@@ -58,9 +55,6 @@ class HttpRatingRemoteDataSource implements RatingRemoteDataSource {
         'Authorization': 'Bearer $token',
       },
     );
-
-    debugPrint("Response body: ${response.body}");
-    debugPrint("Response status: ${response.statusCode}");
 
     if (response.statusCode == 200) {
       return RatingCheckResponseModel.fromJson(json.decode(response.body));

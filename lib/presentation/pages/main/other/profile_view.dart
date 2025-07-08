@@ -74,7 +74,7 @@ class ProfileView extends StatelessWidget {
                                       ),
                                 )
                               : CircleAvatar(
-                                  radius: 24.sp,
+                                  radius: 35.sp,
                                   backgroundImage: AssetImage(kUserAvatar),
                                   backgroundColor: Colors.transparent,
                                 ),
@@ -186,32 +186,31 @@ class ProfileView extends StatelessWidget {
             const Divider(height: 30),
 
             // 📖 View Booking History (Clickable)
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "History",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 10),
-            BlocBuilder<UserBloc, UserState>(
-              builder: (context, state) {
-                return ListTile(
-                  leading: const Icon(Icons.history, color: Colors.deepPurple),
-                  title: const Text('View Booking History'),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    if (state is UserLogged) {
-                      Navigator.of(context).pushNamed(AppRouter.orderHistory);
-                    } else {
-                      Navigator.of(context).pushNamed(AppRouter.login);
-                    }
-                  },
-                );
-              },
-            ),
-            const Divider(height: 30),
-
+            // Align(
+            //   alignment: Alignment.centerLeft,
+            //   child: Text(
+            //     "History",
+            //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            //   ),
+            // ),
+            // const SizedBox(height: 10),
+            // BlocBuilder<UserBloc, UserState>(
+            //   builder: (context, state) {
+            //     return ListTile(
+            //       leading: const Icon(Icons.history, color: Colors.deepPurple),
+            //       title: const Text('View Booking History'),
+            //       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            //       onTap: () {
+            //         if (state is UserLogged) {
+            //           Navigator.of(context).pushNamed(AppRouter.orderHistory);
+            //         } else {
+            //           Navigator.of(context).pushNamed(AppRouter.login);
+            //         }
+            //       },
+            //     );
+            //   },
+            // ),
+            // const Divider(height: 30),
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -224,8 +223,78 @@ class ProfileView extends StatelessWidget {
               leading: const Icon(Icons.logout, color: Colors.redAccent),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               title: const Text('Sign Out'),
-              onTap: () {
-                //
+              onTap: () async {
+                await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    backgroundColor: kBackgroundColor,
+                    title: const Text(
+                      'Confirm Logout',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    content: const Text('Are you sure you want to sign out?'),
+                    actions: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment
+                            .spaceBetween, // This creates space between buttons
+                        children: [
+                          Expanded(
+                            // Makes buttons share available space equally
+                            child: ElevatedButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey.shade200,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: const Text(
+                                "Cancel",
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ), // Adds spacing between buttons
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                context.read<UserBloc>().add(LogoutUserEvent());
+                                Navigator.of(context).pop(true);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: kSecondaryColor,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: const Text(
+                                "Sign Out",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
             const SizedBox(height: 60),

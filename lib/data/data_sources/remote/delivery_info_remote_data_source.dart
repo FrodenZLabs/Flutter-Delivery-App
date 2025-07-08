@@ -1,5 +1,6 @@
 import 'package:flutter_delivery_app/core/constants/strings.dart';
 import 'package:flutter_delivery_app/core/error/exceptions.dart';
+import 'package:flutter_delivery_app/core/error/failures.dart';
 import 'package:flutter_delivery_app/data/models/delivery/delivery_info_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
@@ -78,6 +79,8 @@ class HttpDeliveryInfoRemoteDataSource implements DeliveryInfoRemoteDataSource {
 
     if (response.statusCode == 200) {
       return deliveryInfoModelListFromRemoteJson(response.body);
+    } else if (response.statusCode == 404) {
+      throw NotFoundFailure();
     } else {
       throw ServerException();
     }

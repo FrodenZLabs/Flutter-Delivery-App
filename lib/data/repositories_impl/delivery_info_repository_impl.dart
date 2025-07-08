@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutter_delivery_app/core/error/exceptions.dart';
 import 'package:flutter_delivery_app/core/error/failures.dart';
 import 'package:flutter_delivery_app/core/network/network_info.dart';
 import 'package:flutter_delivery_app/core/usecases/usecase.dart';
@@ -106,6 +107,8 @@ class DeliveryInfoRepositoryImpl implements DeliveryInfoRepository {
       return Right(result);
     } on Failure catch (failure) {
       return Left(failure);
+    } on ServerException {
+      return Left(ServerFailure());
     }
   }
 

@@ -23,4 +23,7 @@ class ScheduleFetchSuccess extends ScheduleState {
   ScheduleFetchSuccess(this.schedule);
 }
 
-class ScheduleFetchFail extends ScheduleState {}
+class ScheduleFetchFail extends ScheduleState {
+  final Failure failure;
+  ScheduleFetchFail(this.failure);
+}

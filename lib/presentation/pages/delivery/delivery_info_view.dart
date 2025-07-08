@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
+import 'package:flutter_delivery_app/core/constants/images.dart';
+import 'package:flutter_delivery_app/core/error/failures.dart';
 import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_action/delivery_info_action_cubit.dart';
 import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_fetch/delivery_info_fetch_cubit.dart';
+import 'package:flutter_delivery_app/presentation/widgets/alert_card.dart';
 import 'package:flutter_delivery_app/presentation/widgets/delivery_info_card.dart';
 import 'package:flutter_delivery_app/presentation/widgets/delivery_info_form.dart';
 import 'package:flutter_delivery_app/presentation/widgets/loading_overlay.dart';
@@ -20,6 +23,7 @@ class _DeliveryInfoViewState extends State<DeliveryInfoView> {
   @override
   void initState() {
     super.initState();
+    context.read<DeliveryInfoFetchCubit>().fetchDeliveryInfo();
   }
 
   @override
@@ -64,42 +68,74 @@ class _DeliveryInfoViewState extends State<DeliveryInfoView> {
           ),
         ),
         backgroundColor: kBackgroundColor,
-        body: BlocBuilder<DeliveryInfoFetchCubit, DeliveryInfoFetchState>(
-          builder: (context, state) {
-            return RefreshIndicator(
-              onRefresh: () async {
-                context.read<DeliveryInfoFetchCubit>().fetchDeliveryInfo();
-              },
-              child: ListView.builder(
-                itemCount:
-                    (state is DeliveryInfoFetchLoading &&
-                        state.deliveryInformation.isEmpty)
-                    ? 5
-                    : state.deliveryInformation.length,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                itemBuilder: (context, index) {
-                  // Actual delivery info items
-                  if (index < state.deliveryInformation.length) {
-                    return DeliveryInfoCard(
-                      deliveryInformation: state.deliveryInformation[index],
-                      isSelected:
-                          state.deliveryInformation[index] ==
-                          state.selectedDeliveryInformation,
-                    );
-                  } else {
-                    return Shimmer.fromColors(
-                      baseColor: Colors.grey.shade100,
-                      highlightColor: Colors.white,
-                      child: DeliveryInfoCard(),
-                    );
-                  }
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: BlocBuilder<DeliveryInfoFetchCubit, DeliveryInfoFetchState>(
+            builder: (context, state) {
+              if (state is DeliveryInfoFetchLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.brown),
+                );
+              }
+
+              if (state is DeliveryInfoFetchFail) {
+                if (state.failure is NotFoundFailure) {
+                  return Center(
+                    child: AlertCard(
+                      image: kEmpty,
+                      message: "Delivery Information is empty.",
+                    ),
+                  );
+                } else if (state.failure is NetworkFailure) {
+                  return Center(
+                    child: AlertCard(
+                      image: kNoConnection,
+                      message: "Network failure.\n Check internet connection!",
+                      onClick: () {
+                        context
+                            .read<DeliveryInfoFetchCubit>()
+                            .fetchDeliveryInfo();
+                      },
+                    ),
+                  );
+                }
+              }
+
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<DeliveryInfoFetchCubit>().fetchDeliveryInfo();
                 },
-              ),
-            );
-          },
+                child: ListView.builder(
+                  itemCount:
+                      (state is DeliveryInfoFetchLoading &&
+                          state.deliveryInformation.isEmpty)
+                      ? 5
+                      : state.deliveryInformation.length,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  itemBuilder: (context, index) {
+                    // // Actual delivery info items
+                    if (index < state.deliveryInformation.length) {
+                      return DeliveryInfoCard(
+                        deliveryInformation: state.deliveryInformation[index],
+                        isSelected:
+                            state.deliveryInformation[index] ==
+                            state.selectedDeliveryInformation,
+                      );
+                    } else {
+                      return Shimmer.fromColors(
+                        baseColor: Colors.grey.shade50,
+                        highlightColor: Colors.brown.shade100,
+                        child: DeliveryInfoCard(),
+                      );
+                    }
+                  },
+                ),
+              );
+            },
+          ),
         ),
         floatingActionButton: SafeArea(
           child: Padding(
@@ -115,7 +151,6 @@ class _DeliveryInfoViewState extends State<DeliveryInfoView> {
                   },
                 );
               },
-              tooltip: 'Increment',
               child: const Icon(Icons.add, color: Colors.white),
             ),
           ),

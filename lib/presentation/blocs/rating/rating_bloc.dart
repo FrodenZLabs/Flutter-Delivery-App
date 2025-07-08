@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/data/data_sources/local/user_local_data_source.dart';
 import 'package:flutter_delivery_app/domain/entities/rating/rating.dart';
 import 'package:flutter_delivery_app/domain/usecases/rating/add_rating_use_case.dart';
@@ -48,9 +47,8 @@ class RatingBloc extends Bloc<RatingEvent, RatingState> {
     try {
       emit(RatingCheckLoading());
 
-      debugPrint("Params: ${event.params}");
       final result = await checkRatingUseCase(event.params);
-      debugPrint("Result: $result");
+
       result.fold((failure) => emit(RatingCheckFailure()), (response) {
         if (response.alreadyRated && response.rating != null) {
           // Case when rating already exists

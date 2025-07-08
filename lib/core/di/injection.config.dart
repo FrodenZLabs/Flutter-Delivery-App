@@ -92,6 +92,8 @@ import 'package:flutter_delivery_app/presentation/blocs/filter/filter_cubit.dart
     as _i669;
 import 'package:flutter_delivery_app/presentation/blocs/home/navbar_cubit.dart'
     as _i860;
+import 'package:flutter_delivery_app/presentation/blocs/popular_service/popular_service_bloc.dart'
+    as _i850;
 import 'package:flutter_delivery_app/presentation/blocs/rating/rating_bloc.dart'
     as _i244;
 import 'package:flutter_delivery_app/presentation/blocs/schedule/schedule_bloc.dart'
@@ -235,6 +237,8 @@ extension GetItInjectableX on _i174.GetIt {
         ));
     gh.factory<_i367.ServiceBloc>(
         () => _i367.ServiceBloc(gh<_i327.GetServiceUseCase>()));
+    gh.factory<_i850.PopularServicesBloc>(
+        () => _i850.PopularServicesBloc(gh<_i327.GetServiceUseCase>()));
     gh.factory<_i448.DeliveryInfoActionCubit>(
         () => _i448.DeliveryInfoActionCubit(
               gh<_i904.AddDeliveryInfoUseCase>(),

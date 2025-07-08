@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_delivery_app/core/error/failures.dart';
 import 'package:flutter_delivery_app/core/usecases/usecase.dart';
 import 'package:flutter_delivery_app/domain/entities/delivery/delivery_info.dart';
 import 'package:flutter_delivery_app/domain/usecases/delivery/delete_local_delivery_info_use_case.dart';
@@ -37,7 +38,12 @@ class DeliveryInfoFetchCubit extends Cubit<DeliveryInfoFetchState> {
       final cachedResult = await _getLocalDeliveryInfoUseCase(NoParams());
       cachedResult.fold(
         (failure) {
-          debugPrint("Error: $failure");
+          emit(
+            DeliveryInfoFetchFail(
+              failure: failure,
+              deliveryInformation: state.deliveryInformation,
+            ),
+          );
         },
         (deliveryInfo) {
           emit(
@@ -55,7 +61,9 @@ class DeliveryInfoFetchCubit extends Cubit<DeliveryInfoFetchState> {
       );
       selectedDeliveryInfo.fold(
         (failure) {
-          debugPrint("error $failure");
+          emit(
+            DeliveryInfoFetchFail(failure: failure, deliveryInformation: []),
+          );
         },
         (deliveryInfo) {
           emit(
@@ -71,9 +79,9 @@ class DeliveryInfoFetchCubit extends Cubit<DeliveryInfoFetchState> {
       final result = await _getRemoteDeliveryInfoUseCase(NoParams());
       result.fold(
         (failure) {
-          debugPrint("error $failure");
           emit(
             DeliveryInfoFetchFail(
+              failure: failure,
               deliveryInformation: state.deliveryInformation,
             ),
           );
@@ -88,9 +96,9 @@ class DeliveryInfoFetchCubit extends Cubit<DeliveryInfoFetchState> {
         },
       );
     } catch (e) {
-      debugPrint('Error: $e');
       emit(
         DeliveryInfoFetchFail(
+          failure: ExceptionFailure(),
           deliveryInformation: state.deliveryInformation,
           selectedDeliveryInformation: state.selectedDeliveryInformation,
         ),
@@ -117,6 +125,7 @@ class DeliveryInfoFetchCubit extends Cubit<DeliveryInfoFetchState> {
     } catch (e) {
       emit(
         DeliveryInfoFetchFail(
+          failure: ExceptionFailure(),
           deliveryInformation: state.deliveryInformation,
           selectedDeliveryInformation: state.selectedDeliveryInformation,
         ),
@@ -143,6 +152,7 @@ class DeliveryInfoFetchCubit extends Cubit<DeliveryInfoFetchState> {
     } catch (e) {
       emit(
         DeliveryInfoFetchFail(
+          failure: ExceptionFailure(),
           deliveryInformation: state.deliveryInformation,
           selectedDeliveryInformation: state.selectedDeliveryInformation,
         ),
@@ -167,6 +177,7 @@ class DeliveryInfoFetchCubit extends Cubit<DeliveryInfoFetchState> {
     } catch (e) {
       emit(
         DeliveryInfoFetchFail(
+          failure: ExceptionFailure(),
           deliveryInformation: state.deliveryInformation,
           selectedDeliveryInformation: state.selectedDeliveryInformation,
         ),
@@ -195,6 +206,7 @@ class DeliveryInfoFetchCubit extends Cubit<DeliveryInfoFetchState> {
     } catch (e) {
       emit(
         DeliveryInfoFetchFail(
+          failure: ExceptionFailure(),
           deliveryInformation: state.deliveryInformation,
           selectedDeliveryInformation: state.selectedDeliveryInformation,
         ),

@@ -45,8 +45,6 @@ class _SearchViewState extends State<SearchView> {
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
-
-    // ✅ Trigger service load when page first opens
     context.read<ServiceBloc>().add(LoadAllServices(FilterServiceParams()));
   }
 
@@ -207,9 +205,33 @@ class _SearchViewState extends State<SearchView> {
                               kNoConnection,
                               width: MediaQuery.of(context).size.width * 0.7,
                             ),
-                          Text(
-                            "Services not found",
-                            style: TextStyle(color: Colors.grey.shade600),
+                          Container(
+                            width: double.infinity, // Takes full width
+                            padding: const EdgeInsets.all(
+                              16,
+                            ), // Adds inner spacing
+                            decoration: BoxDecoration(
+                              color:
+                                  Colors.red.shade100, // Light red background
+                              borderRadius: BorderRadius.circular(
+                                8,
+                              ), // Rounded corners
+                              border: Border.all(
+                                color: Colors.red.shade300, // Border color
+                                width: 1, // Border width
+                              ),
+                            ),
+                            child: Text(
+                              "Services not found",
+                              style: TextStyle(
+                                color: Colors
+                                    .red
+                                    .shade800, // Darker red text for contrast
+                                fontSize: 22,
+                                fontWeight: FontWeight.w500, // Slightly bold
+                              ),
+                              textAlign: TextAlign.center, // Center the text
+                            ),
                           ),
                           IconButton(
                             onPressed: () {
@@ -224,7 +246,7 @@ class _SearchViewState extends State<SearchView> {
                                 ),
                               );
                             },
-                            icon: const Icon(Icons.refresh),
+                            icon: const Icon(Icons.refresh, size: 30),
                           ),
                           SizedBox(
                             height: MediaQuery.of(context).size.height * 0.1,
@@ -262,8 +284,8 @@ class _SearchViewState extends State<SearchView> {
                           return ServiceCard(service: state.services[index]);
                         } else {
                           return Shimmer.fromColors(
-                            baseColor: Colors.grey.shade100,
-                            highlightColor: Colors.white,
+                            baseColor: Colors.brown.shade50,
+                            highlightColor: Colors.brown.shade100,
                             child: const ServiceCard(),
                           );
                         }

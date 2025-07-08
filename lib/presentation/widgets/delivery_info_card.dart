@@ -55,16 +55,40 @@ class DeliveryInfoCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      deliveryInformation!.contactNumber,
-                      style: TextStyle(fontSize: 14),
+                    SizedBox(
+                      height: 20,
+                      child: deliveryInformation == null
+                          ? Container(
+                              width: 120,
+                              height: 18,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            )
+                          : Text(
+                              deliveryInformation!.contactNumber,
+                              style: const TextStyle(fontSize: 14),
+                            ),
                     ),
-                    Text(
-                      "${deliveryInformation!.address}, ${deliveryInformation!.city}",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    SizedBox(
+                      height: 20,
+                      child: deliveryInformation == null
+                          ? Container(
+                              width: 120,
+                              height: 18,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            )
+                          : Text(
+                              "${deliveryInformation!.address}, ${deliveryInformation!.city}",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 4),

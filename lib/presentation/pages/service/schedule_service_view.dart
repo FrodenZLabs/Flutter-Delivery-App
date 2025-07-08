@@ -6,6 +6,7 @@ import 'package:flutter_delivery_app/core/router/app_router.dart';
 import 'package:flutter_delivery_app/data/models/schedule/schedule_model.dart';
 import 'package:flutter_delivery_app/domain/entities/service/service.dart';
 import 'package:flutter_delivery_app/presentation/blocs/delivery/delivery_info_fetch/delivery_info_fetch_cubit.dart';
+import 'package:flutter_delivery_app/presentation/blocs/home/navbar_cubit.dart';
 import 'package:flutter_delivery_app/presentation/blocs/schedule/schedule_bloc.dart';
 import 'package:flutter_delivery_app/presentation/blocs/user/user_bloc.dart';
 import 'package:flutter_delivery_app/presentation/widgets/input_form_button.dart';
@@ -154,10 +155,7 @@ class _ScheduleServiceViewState extends State<ScheduleServiceView> {
         }
 
         if (state is ScheduleAddSuccess) {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            AppRouter.orders,
-            (Route<dynamic> route) => false,
-          );
+          context.read<NavbarCubit>().update(2);
           // ✅ Show toast
           toastification.show(
             context: context,

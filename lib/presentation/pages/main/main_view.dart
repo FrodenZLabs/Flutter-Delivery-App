@@ -35,42 +35,39 @@ class MainView extends StatelessWidget {
                 bottom: 10,
                 left: 18,
                 right: 18,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0),
-                  child: StylishBottomBar(
-                    option: DotBarOptions(dotStyle: DotStyle.tile),
-                    borderRadius: const BorderRadius.all(Radius.circular(48)),
-                    currentIndex: state,
-                    onTap: (index) {
-                      context.read<NavbarCubit>().update(index);
-                    },
-                    items: [
-                      BottomBarItem(
-                        selectedColor: Colors.blueAccent,
-                        icon: const Icon(Icons.home),
-                        selectedIcon: const Icon(Icons.home_filled),
-                        title: const Text('Home'),
-                      ),
-                      BottomBarItem(
-                        selectedColor: Colors.deepOrange,
-                        icon: const Icon(Icons.search),
-                        selectedIcon: const Icon(Icons.search),
-                        title: const Text('Search'),
-                      ),
-                      BottomBarItem(
-                        selectedColor: Colors.green,
-                        icon: const Icon(Icons.description_outlined),
-                        selectedIcon: const Icon(Icons.description),
-                        title: const Text('Orders'),
-                      ),
-                      BottomBarItem(
-                        selectedColor: Colors.deepPurpleAccent,
-                        icon: const Icon(Icons.person_outline),
-                        selectedIcon: const Icon(Icons.person),
-                        title: const Text('Profile'),
-                      ),
-                    ],
-                  ),
+                child: StylishBottomBar(
+                  option: DotBarOptions(dotStyle: DotStyle.tile),
+                  borderRadius: const BorderRadius.all(Radius.circular(48)),
+                  currentIndex: state,
+                  onTap: (index) {
+                    context.read<NavbarCubit>().update(index);
+                  },
+                  items: [
+                    BottomBarItem(
+                      selectedColor: Colors.blueAccent,
+                      icon: const Icon(Icons.home),
+                      selectedIcon: const Icon(Icons.home_filled),
+                      title: const Text('Home'),
+                    ),
+                    BottomBarItem(
+                      selectedColor: Colors.deepOrange,
+                      icon: const Icon(Icons.search),
+                      selectedIcon: const Icon(Icons.search),
+                      title: const Text('Search'),
+                    ),
+                    BottomBarItem(
+                      selectedColor: Colors.green,
+                      icon: const Icon(Icons.description_outlined),
+                      selectedIcon: const Icon(Icons.description),
+                      title: const Text('Orders'),
+                    ),
+                    BottomBarItem(
+                      selectedColor: Colors.deepPurpleAccent,
+                      icon: const Icon(Icons.person_outline),
+                      selectedIcon: const Icon(Icons.person),
+                      title: const Text('Profile'),
+                    ),
+                  ],
                 ),
               ),
             ],

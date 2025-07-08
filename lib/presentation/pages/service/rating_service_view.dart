@@ -198,9 +198,9 @@ class _RatingServiceViewState extends State<RatingServiceView> {
   }
 
   Widget _buildRatingForm(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: SafeArea(
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
