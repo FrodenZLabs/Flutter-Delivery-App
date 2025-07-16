@@ -29,13 +29,19 @@ class ScheduleModelAdapter extends TypeAdapter<ScheduleModel> {
       driverImage: fields[9] as String?,
       driverContact: fields[10] as String?,
       vehicleInfo: fields[11] as String?,
+      name: fields[12] as String,
+      subname: fields[13] as String,
+      imageUrl: fields[14] as String,
+      address: fields[15] as String,
+      city: fields[16] as String,
+      contact: fields[17] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, ScheduleModel obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -59,7 +65,19 @@ class ScheduleModelAdapter extends TypeAdapter<ScheduleModel> {
       ..writeByte(10)
       ..write(obj.driverContact)
       ..writeByte(11)
-      ..write(obj.vehicleInfo);
+      ..write(obj.vehicleInfo)
+      ..writeByte(12)
+      ..write(obj.name)
+      ..writeByte(13)
+      ..write(obj.subname)
+      ..writeByte(14)
+      ..write(obj.imageUrl)
+      ..writeByte(15)
+      ..write(obj.address)
+      ..writeByte(16)
+      ..write(obj.city)
+      ..writeByte(17)
+      ..write(obj.contact);
   }
 
   @override

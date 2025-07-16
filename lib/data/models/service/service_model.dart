@@ -60,6 +60,9 @@ class ServiceModel extends Service {
   @HiveField(11)
   final String closeTime;
 
+  @HiveField(12)
+  final double averageRating;
+
   const ServiceModel({
     required this.id,
     required this.name,
@@ -73,6 +76,7 @@ class ServiceModel extends Service {
     required this.closeDay,
     required this.openTime,
     required this.closeTime,
+    required this.averageRating,
   }) : super(
          id: id,
          name: name,
@@ -86,12 +90,13 @@ class ServiceModel extends Service {
          closeDay: closeDay,
          openTime: openTime,
          closeTime: closeTime,
+         averageRating: averageRating,
        );
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) => ServiceModel(
-    id: json['id'],
+    id: json['_id'],
     name: json['name'],
-    subName: json['subName'],
+    subName: json['subname'],
     description: json['description'],
     imageUrl: json['imageUrl'],
     baseFee: (json['baseFee'] as num).toDouble(),
@@ -101,6 +106,7 @@ class ServiceModel extends Service {
     closeDay: json['closeDay'],
     openTime: json['openTime'],
     closeTime: json['closeTime'],
+    averageRating: (json['averageRating'] as num).toDouble(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -116,5 +122,6 @@ class ServiceModel extends Service {
     'closeDay': closeDay,
     'openTime': openTime,
     'closeTime': closeTime,
+    'averageRating': averageRating,
   };
 }

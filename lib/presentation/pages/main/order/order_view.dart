@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_delivery_app/presentation/blocs/home/navbar_cubit.dart';
 import 'package:flutter_delivery_app/presentation/blocs/schedule/schedule_bloc.dart';
 import 'package:flutter_delivery_app/presentation/widgets/alert_card.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
 class OrderView extends StatefulWidget {
   const OrderView({super.key});
@@ -36,6 +38,12 @@ class _OrderViewState extends State<OrderView>
           scheduleDate: DateTime.now(),
           scheduleTime: '',
           status: '',
+          name: '',
+          subname: '',
+          imageUrl: '',
+          address: '',
+          city: '',
+          contact: '',
         ),
       ),
     );
@@ -85,15 +93,22 @@ class _OrderViewState extends State<OrderView>
         return ListTile(
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              kDryCleaning, // Service Image
-              width: 50,
+            child: CachedNetworkImage(
+              imageUrl: schedule.imageUrl,
               height: 50,
+              width: 50,
               fit: BoxFit.cover,
+              placeholder: (context, url) => Shimmer.fromColors(
+                baseColor: Colors.grey.shade100,
+                highlightColor: Colors.white,
+                child: Container(color: Colors.grey.shade300),
+              ),
+              errorWidget: (context, url, error) =>
+                  const Center(child: Icon(Icons.error)),
             ),
           ),
           title: Text(
-            "Service Name",
+            schedule.name,
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
           subtitle: Text(
@@ -189,6 +204,12 @@ class _OrderViewState extends State<OrderView>
                           scheduleDate: DateTime.now(),
                           scheduleTime: '',
                           status: '',
+                          name: '',
+                          subname: '',
+                          imageUrl: '',
+                          address: '',
+                          city: '',
+                          contact: '',
                         ),
                       ),
                     );

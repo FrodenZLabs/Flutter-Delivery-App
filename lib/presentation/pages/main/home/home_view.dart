@@ -24,47 +24,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  // Dummy Data with image paths
-  final List<Map<String, String>> popularServices = [
-    {'title': 'Food Delivery', 'image': kPharmacy},
-    {'title': 'Grocery Delivery', 'image': kGrocery},
-    {'title': 'Parcel Pickup', 'image': kPromotions},
-    {'title': 'Laundry Service', 'image': kPharmacy},
-  ];
-
-  final List<Map<String, String>> featuredServices = [
-    {
-      'image': kLaundry,
-      'title': 'Laundry Service',
-      'subtitle': 'Same-day pickup and delivery',
-    },
-    {
-      'image': kDryCleaning,
-      'title': 'Water Delivery',
-      'subtitle': 'Expert dry cleaning services',
-    },
-    {
-      'image': kShoeRepair,
-      'title': 'Shoe Repair',
-      'subtitle': 'Professional shoe repair',
-    },
-    {
-      'image': kTailoring,
-      'title': 'Tailoring',
-      'subtitle': 'Custom tailoring and alterations',
-    },
-    {
-      'image': kDryCleaning,
-      'title': 'Document Delivery',
-      'subtitle': 'Expert dry cleaning services',
-    },
-    {
-      'image': kLaundry,
-      'title': 'Cake Delivery',
-      'subtitle': 'Same-day pickup and delivery',
-    },
-  ];
-
   @override
   void initState() {
     super.initState();

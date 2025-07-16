@@ -23,7 +23,6 @@ class _DeliveryInfoViewState extends State<DeliveryInfoView> {
   @override
   void initState() {
     super.initState();
-    context.read<DeliveryInfoFetchCubit>().fetchDeliveryInfo();
   }
 
   @override
@@ -72,9 +71,37 @@ class _DeliveryInfoViewState extends State<DeliveryInfoView> {
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: BlocBuilder<DeliveryInfoFetchCubit, DeliveryInfoFetchState>(
             builder: (context, state) {
-              if (state is DeliveryInfoFetchLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(color: Colors.brown),
+              if (state is DeliveryInfoFetchSuccess) {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    context.read<DeliveryInfoFetchCubit>().fetchDeliveryInfo();
+                  },
+                  child: ListView.builder(
+                    itemCount: (state is DeliveryInfoFetchLoading)
+                        ? 5
+                        : state.deliveryInformation.length,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    itemBuilder: (context, index) {
+                      // // Actual delivery info items
+                      if (index < state.deliveryInformation.length) {
+                        return DeliveryInfoCard(
+                          deliveryInformation: state.deliveryInformation[index],
+                          isSelected:
+                              state.deliveryInformation[index] ==
+                              state.selectedDeliveryInformation,
+                        );
+                      } else {
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey.shade50,
+                          highlightColor: Colors.brown.shade100,
+                          child: DeliveryInfoCard(),
+                        );
+                      }
+                    },
+                  ),
                 );
               }
 
@@ -101,38 +128,8 @@ class _DeliveryInfoViewState extends State<DeliveryInfoView> {
                 }
               }
 
-              return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<DeliveryInfoFetchCubit>().fetchDeliveryInfo();
-                },
-                child: ListView.builder(
-                  itemCount:
-                      (state is DeliveryInfoFetchLoading &&
-                          state.deliveryInformation.isEmpty)
-                      ? 5
-                      : state.deliveryInformation.length,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  itemBuilder: (context, index) {
-                    // // Actual delivery info items
-                    if (index < state.deliveryInformation.length) {
-                      return DeliveryInfoCard(
-                        deliveryInformation: state.deliveryInformation[index],
-                        isSelected:
-                            state.deliveryInformation[index] ==
-                            state.selectedDeliveryInformation,
-                      );
-                    } else {
-                      return Shimmer.fromColors(
-                        baseColor: Colors.grey.shade50,
-                        highlightColor: Colors.brown.shade100,
-                        child: DeliveryInfoCard(),
-                      );
-                    }
-                  },
-                ),
+              return const Center(
+                child: CircularProgressIndicator(color: Colors.brown),
               );
             },
           ),

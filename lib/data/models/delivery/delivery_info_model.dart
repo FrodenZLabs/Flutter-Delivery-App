@@ -65,7 +65,7 @@ class DeliveryInfoModel extends DeliveryInfo {
 
   factory DeliveryInfoModel.fromJson(Map<String, dynamic> json) {
     return DeliveryInfoModel(
-      id: json['id'],
+      id: json['_id'],
       userId: json['userId'],
       address: json['address'],
       city: json['city'],

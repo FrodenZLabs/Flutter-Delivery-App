@@ -11,6 +11,7 @@ class Service {
   final String closeDay; // e.g. 'Friday'
   final String openTime; // e.g. '8:00 AM'
   final String closeTime; // e.g. '5:00 PM'
+  final double averageRating;
 
   const Service({
     required this.id,
@@ -25,5 +26,6 @@ class Service {
     required this.closeDay,
     required this.openTime,
     required this.closeTime,
+    required this.averageRating,
   });
 }

@@ -27,10 +27,7 @@ class DeliveryInfoActionCubit extends Cubit<DeliveryInfoActionState> {
   void addDeliveryInfo(DeliveryInfoModel params) async {
     try {
       emit(DeliveryInfoActionLoading());
-      final userId = await _userLocalDataSource.getUserId();
-      final updatedParams = params.copyWith(userId: userId);
-
-      final result = await _addDeliveryInfoUseCase(updatedParams);
+      final result = await _addDeliveryInfoUseCase(params);
       result.fold(
         (failure) => emit(DeliveryInfoActionFail()),
         (deliveryInfo) => emit(DeliveryInfoAddActionSuccess(deliveryInfo)),
@@ -43,10 +40,7 @@ class DeliveryInfoActionCubit extends Cubit<DeliveryInfoActionState> {
   void editDeliveryInfo(DeliveryInfoModel params) async {
     try {
       emit(DeliveryInfoActionLoading());
-      final userId = await _userLocalDataSource.getUserId();
-      final updatedParams = params.copyWith(userId: userId);
-
-      final result = await _editDeliveryInfoUseCase(updatedParams);
+      final result = await _editDeliveryInfoUseCase(params);
       result.fold(
         (failure) => emit(DeliveryInfoActionFail()),
         (deliveryInfo) => emit(DeliveryInfoEditActionSuccess(deliveryInfo)),

@@ -22,7 +22,7 @@ class HttpScheduleRemoteDataSource implements ScheduleRemoteDataSource {
   @override
   Future<ScheduleModel> bookSchedule(ScheduleModel params, String token) async {
     final response = await client.post(
-      Uri.parse('$baseUrl/schedules/add'),
+      Uri.parse('$baseUrl/api/schedule/add'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -43,7 +43,7 @@ class HttpScheduleRemoteDataSource implements ScheduleRemoteDataSource {
     String userId,
     String token,
   ) async {
-    final uri = Uri.parse('$baseUrl/schedules/user/$userId').replace(
+    final uri = Uri.parse('$baseUrl/api/schedule/user/$userId').replace(
       queryParameters: {if (params.status.isNotEmpty) 'status': params.status},
     );
 

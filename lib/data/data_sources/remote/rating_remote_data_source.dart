@@ -22,7 +22,7 @@ class HttpRatingRemoteDataSource implements RatingRemoteDataSource {
   @override
   Future<RatingModel> addRating(RatingParams params, String token) async {
     final response = await client.post(
-      Uri.parse('$baseUrl/ratings/add'),
+      Uri.parse('$baseUrl/api/rating/add'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -46,7 +46,7 @@ class HttpRatingRemoteDataSource implements RatingRemoteDataSource {
     String scheduleId,
     String token,
   ) async {
-    final uri = Uri.parse('$baseUrl/ratings/eligible/$scheduleId');
+    final uri = Uri.parse('$baseUrl/api/rating/eligible/$scheduleId');
 
     final response = await client.get(
       uri,

@@ -1,9 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/constants/colors.dart';
-import 'package:flutter_delivery_app/core/constants/images.dart';
 import 'package:flutter_delivery_app/core/router/app_router.dart';
 import 'package:flutter_delivery_app/data/models/schedule/schedule_model.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -134,11 +135,18 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(40),
-              child: Image.asset(
-                kMaleAvatar,
-                width: 80,
+              child: CachedNetworkImage(
+                imageUrl: widget.schedule.driverImage!,
                 height: 80,
+                width: 80,
                 fit: BoxFit.cover,
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: Colors.grey.shade100,
+                  highlightColor: Colors.white,
+                  child: Container(color: Colors.grey.shade300),
+                ),
+                errorWidget: (context, url, error) =>
+                    const Center(child: Icon(Icons.error)),
               ),
             ),
             const SizedBox(width: 16),
@@ -292,11 +300,18 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    kDryCleaning,
-                    width: 80,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.schedule.imageUrl,
                     height: 80,
+                    width: 80,
                     fit: BoxFit.cover,
+                    placeholder: (context, url) => Shimmer.fromColors(
+                      baseColor: Colors.grey.shade100,
+                      highlightColor: Colors.white,
+                      child: Container(color: Colors.grey.shade300),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Center(child: Icon(Icons.error)),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -305,19 +320,28 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.schedule.serviceId,
+                        widget.schedule.name,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        widget.schedule.subname,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.brown,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Order #${widget.schedule.id}',
                         style: const TextStyle(
-                          color: Colors.brown,
+                          color: Colors.blueAccent,
                           fontSize: 18,
                           fontWeight: FontWeight.w300,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
@@ -343,8 +367,8 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
             ),
             const SizedBox(height: 4),
-            Text('address city'),
-            Text('Contact: contact'),
+            Text('${widget.schedule.address},  ${widget.schedule.city}'),
+            Text('Contact: ${widget.schedule.contact}'),
 
             const SizedBox(height: 20),
 

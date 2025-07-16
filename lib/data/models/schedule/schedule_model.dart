@@ -63,6 +63,24 @@ class ScheduleModel extends Schedule {
   @HiveField(11)
   final String? vehicleInfo;
 
+  @HiveField(12)
+  final String name;
+
+  @HiveField(13)
+  final String subname;
+
+  @HiveField(14)
+  final String imageUrl;
+
+  @HiveField(15)
+  final String address;
+
+  @HiveField(16)
+  final String city;
+
+  @HiveField(17)
+  final String contact;
+
   ScheduleModel({
     required this.id,
     required this.userId,
@@ -76,6 +94,12 @@ class ScheduleModel extends Schedule {
     this.driverImage,
     this.driverContact,
     this.vehicleInfo,
+    required this.name,
+    required this.subname,
+    required this.imageUrl,
+    required this.address,
+    required this.city,
+    required this.contact,
   }) : super(
          id: id,
          userId: userId,
@@ -86,26 +110,46 @@ class ScheduleModel extends Schedule {
          status: status,
        );
 
-  factory ScheduleModel.fromJson(Map<String, dynamic> json) => ScheduleModel(
-    id: json['id'],
-    userId: json['userId'],
-    serviceId: json['serviceId'],
-    deliveryInfoId: json['deliveryInfoId'],
-    scheduleDate: DateTime.parse(json['scheduleDate']),
-    scheduleTime: json['scheduleTime'],
-    status: json['status'],
-    driverId: json['driverId'],
-    driverName: json['driverName'],
-    driverImage: json['driverImage'],
-    driverContact: json['driverContact'],
-    vehicleInfo: json['vehicleInfo'],
-  );
+  factory ScheduleModel.fromJson(Map<String, dynamic> json) {
+    final driver = json['driverId'];
+    final service = json['serviceId'];
+    final deliveryInfo = json['deliveryInfoId'];
+
+    return ScheduleModel(
+      id: json['_id'],
+      userId: json['userId'],
+      serviceId: service['_id'],
+      name: service['name'],
+      subname: service['subname'],
+      imageUrl: service['imageUrl'],
+      deliveryInfoId: deliveryInfo['_id'],
+      address: deliveryInfo['address'],
+      city: deliveryInfo['city'],
+      contact: deliveryInfo['contactNumber'],
+      scheduleDate: DateTime.parse(json['scheduleDate']),
+      scheduleTime: json['scheduleTime'],
+      status: json['status'],
+      driverId: driver != null ? driver['_id'] : null,
+      driverName: driver != null
+          ? "${driver['firstName']} ${driver['lastName']}"
+          : null,
+      driverImage: driver != null ? driver['profilePictureUrl'] : null,
+      driverContact: driver != null ? driver['contactNumber'] : null,
+      vehicleInfo: driver != null ? driver['vehicleType'] : null,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     'id': id,
     'userId': userId,
     'serviceId': serviceId,
+    'name': name,
+    'subname': subname,
+    'imageUrl': imageUrl,
     'deliveryInfoId': deliveryInfoId,
+    'address': address,
+    'city': city,
+    'contact': contact,
     'scheduleDate': scheduleDate.toIso8601String(),
     'scheduleTime': scheduleTime,
     'status': status,
@@ -120,6 +164,9 @@ class ScheduleModel extends Schedule {
     String? id,
     String? userId,
     String? serviceId,
+    String? name,
+    String? subname,
+    String? imageUrl,
     String? deliveryInfoId,
     DateTime? scheduleDate,
     String? scheduleTime,
@@ -133,6 +180,12 @@ class ScheduleModel extends Schedule {
       scheduleDate: scheduleDate ?? this.scheduleDate,
       scheduleTime: scheduleTime ?? this.scheduleTime,
       status: status ?? this.status,
+      name: name ?? this.name,
+      subname: subname ?? this.subname,
+      imageUrl: imageUrl ?? this.imageUrl,
+      address: address,
+      city: city,
+      contact: contact,
     );
   }
 }

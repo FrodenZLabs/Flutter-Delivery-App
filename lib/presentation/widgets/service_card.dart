@@ -52,7 +52,7 @@ class ServiceCard extends StatelessWidget {
                       ),
                     )
                   : Hero(
-                      tag: service!.id,
+                      tag: 'service-${service?.id}',
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child: CachedNetworkImage(

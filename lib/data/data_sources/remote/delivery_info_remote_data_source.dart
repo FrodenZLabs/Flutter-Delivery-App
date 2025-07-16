@@ -28,7 +28,7 @@ class HttpDeliveryInfoRemoteDataSource implements DeliveryInfoRemoteDataSource {
     String token,
   ) async {
     final response = await client.post(
-      Uri.parse('$baseUrl/delivery-info/user/add'),
+      Uri.parse('$baseUrl/api/delivery-info/add'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -49,7 +49,7 @@ class HttpDeliveryInfoRemoteDataSource implements DeliveryInfoRemoteDataSource {
     String token,
   ) async {
     final response = await client.put(
-      Uri.parse('$baseUrl/delivery-info/user/update'),
+      Uri.parse('$baseUrl/api/delivery-info/update/${params.id}'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -70,7 +70,7 @@ class HttpDeliveryInfoRemoteDataSource implements DeliveryInfoRemoteDataSource {
     String token,
   ) async {
     final response = await client.get(
-      Uri.parse('$baseUrl/delivery-info/user/$userId'),
+      Uri.parse('$baseUrl/api/delivery-info/user/$userId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

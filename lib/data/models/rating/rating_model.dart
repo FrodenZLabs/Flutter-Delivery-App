@@ -29,9 +29,9 @@ class RatingModel extends Rating {
       comment: json['comment']?.toString() ?? '',
       scheduleId: json['scheduleId'].toString(),
       serviceId: json['serviceId'].toString(),
-      rating: json['rating'] is int
-          ? json['rating']
-          : int.tryParse(json['rating'].toString()) ?? 0,
+      rating: json['ratings'] is int
+          ? json['ratings']
+          : int.tryParse(json['ratings'].toString()) ?? 0,
       createdAt: DateTime.parse(json['createdAt']),
     );
   }

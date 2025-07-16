@@ -29,13 +29,14 @@ class ServiceModelAdapter extends TypeAdapter<ServiceModel> {
       closeDay: fields[9] as String,
       openTime: fields[10] as String,
       closeTime: fields[11] as String,
+      averageRating: fields[12] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, ServiceModel obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -59,7 +60,9 @@ class ServiceModelAdapter extends TypeAdapter<ServiceModel> {
       ..writeByte(10)
       ..write(obj.openTime)
       ..writeByte(11)
-      ..write(obj.closeTime);
+      ..write(obj.closeTime)
+      ..writeByte(12)
+      ..write(obj.averageRating);
   }
 
   @override

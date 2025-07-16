@@ -17,7 +17,7 @@ class HttpServiceRemoteDataSource implements ServiceRemoteDataSource {
 
   @override
   Future<ServiceResponseModel> getServices(FilterServiceParams params) async {
-    final uri = Uri.parse('$baseUrl/services').replace(
+    final uri = Uri.parse('$baseUrl/api/service/').replace(
       queryParameters: params
           .toQueryParams(), // ✅ Now uses the full pagination + filter map
     );

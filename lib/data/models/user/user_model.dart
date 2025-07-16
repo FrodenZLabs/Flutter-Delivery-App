@@ -55,7 +55,7 @@ class UserModel extends User {
     firstName: json['firstName'],
     lastName: json['lastName'],
     email: json['email'],
-    password: json['password'],
+    password: json['password'] ?? '',
     imageUrl: json['imageUrl'],
   );
 

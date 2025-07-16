@@ -137,7 +137,13 @@ class _ScheduleServiceViewState extends State<ScheduleServiceView> {
       deliveryInfoId: deliveryState.selectedDeliveryInformation!.id,
       scheduleDate: selectedDate!,
       scheduleTime: selectedTime!.format(context),
-      status: 'Pending', // Initial status
+      status: 'Pending',
+      name: '',
+      subname: '',
+      imageUrl: '',
+      address: '',
+      city: '',
+      contact: '',
     );
 
     // Dispatch the book event
@@ -156,6 +162,7 @@ class _ScheduleServiceViewState extends State<ScheduleServiceView> {
 
         if (state is ScheduleAddSuccess) {
           context.read<NavbarCubit>().update(2);
+          Navigator.of(context).pop();
           // ✅ Show toast
           toastification.show(
             context: context,

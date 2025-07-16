@@ -26,16 +26,13 @@ class HttpUserRemoteDataSource implements UserRemoteDataSource {
   @override
   Future<AuthenticationResponseModel> loginUser(LoginParams params) async {
     final response = await client.post(
-      Uri.parse('$baseUrl/auth/sign-in'),
+      Uri.parse('$baseUrl/api/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'email': params.email, 'password': params.password}),
     );
 
     if (response.statusCode == 200) {
-      final authResponse = authenticationResponseModelFromJson(response.body);
-      await localDataSource.saveToken(authResponse.token);
-      await localDataSource.saveUser(authResponse.user);
-      return authResponse;
+      return authenticationResponseModelFromJson(response.body);
     } else if (response.statusCode == 400 || response.statusCode == 401) {
       throw CredentialFailure();
     } else {
@@ -46,7 +43,7 @@ class HttpUserRemoteDataSource implements UserRemoteDataSource {
   @override
   Future<UserModel> registerUser(RegisterParams params) async {
     final response = await client.post(
-      Uri.parse('$baseUrl/auth/sign-up'),
+      Uri.parse('$baseUrl/api/auth/register'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'firstName': params.firstName,
@@ -57,7 +54,8 @@ class HttpUserRemoteDataSource implements UserRemoteDataSource {
     );
 
     if (response.statusCode == 201) {
-      return userModelFromJson(response.body);
+      final jsonMap = json.decode(response.body);
+      return UserModel.fromJson(jsonMap['savedUser']);
     } else if (response.statusCode == 400 || response.statusCode == 401) {
       throw CredentialFailure();
     } else {

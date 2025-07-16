@@ -235,10 +235,10 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i1016.GetSelectedDeliveryInfoUseCase>(),
           gh<_i293.DeleteLocalDeliveryInfoUseCase>(),
         ));
-    gh.factory<_i367.ServiceBloc>(
-        () => _i367.ServiceBloc(gh<_i327.GetServiceUseCase>()));
     gh.factory<_i850.PopularServicesBloc>(
         () => _i850.PopularServicesBloc(gh<_i327.GetServiceUseCase>()));
+    gh.factory<_i367.ServiceBloc>(
+        () => _i367.ServiceBloc(gh<_i327.GetServiceUseCase>()));
     gh.factory<_i448.DeliveryInfoActionCubit>(
         () => _i448.DeliveryInfoActionCubit(
               gh<_i904.AddDeliveryInfoUseCase>(),
