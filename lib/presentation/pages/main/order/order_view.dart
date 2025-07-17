@@ -189,33 +189,7 @@ class _OrderViewState extends State<OrderView>
         child: BlocBuilder<ScheduleBloc, ScheduleState>(
           builder: (context, state) {
             if (state is ScheduleFetchFail) {
-              if (state.failure is NetworkFailure) {
-                return AlertCard(
-                  image: kNoConnection,
-                  message: "Network failure.\n Check internet connection!",
-                  onClick: () {
-                    context.read<ScheduleBloc>().add(
-                      GetSchedulesByUserEvent(
-                        ScheduleModel(
-                          id: '',
-                          userId: '',
-                          serviceId: '',
-                          deliveryInfoId: '',
-                          scheduleDate: DateTime.now(),
-                          scheduleTime: '',
-                          status: '',
-                          name: '',
-                          subname: '',
-                          imageUrl: '',
-                          address: '',
-                          city: '',
-                          contact: '',
-                        ),
-                      ),
-                    );
-                  },
-                );
-              } else if (state.failure is ServerFailure) {
+              if (state.failure is ServerFailure) {
                 return Column(
                   // mainAxisAlignment: MainAxisAlignment.center,
                   children: [

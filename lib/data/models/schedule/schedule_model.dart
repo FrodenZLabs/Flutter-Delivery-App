@@ -111,31 +111,33 @@ class ScheduleModel extends Schedule {
        );
 
   factory ScheduleModel.fromJson(Map<String, dynamic> json) {
-    final driver = json['driverId'];
     final service = json['serviceId'];
     final deliveryInfo = json['deliveryInfoId'];
+    final driver = json['driverId'];
 
     return ScheduleModel(
       id: json['_id'],
       userId: json['userId'],
-      serviceId: service['_id'],
-      name: service['name'],
-      subname: service['subname'],
-      imageUrl: service['imageUrl'],
-      deliveryInfoId: deliveryInfo['_id'],
-      address: deliveryInfo['address'],
-      city: deliveryInfo['city'],
-      contact: deliveryInfo['contactNumber'],
+      serviceId: service is Map ? service['_id'] : service,
+      name: service is Map ? service['name'] ?? '' : '',
+      subname: service is Map ? service['subname'] ?? '' : '',
+      imageUrl: service is Map ? service['imageUrl'] ?? '' : '',
+      deliveryInfoId: deliveryInfo is Map ? deliveryInfo['_id'] : deliveryInfo,
+      address: deliveryInfo is Map ? deliveryInfo['address'] ?? '' : '',
+      city: deliveryInfo is Map ? deliveryInfo['city'] ?? '' : '',
+      contact: deliveryInfo is Map ? deliveryInfo['contactNumber'] ?? '' : '',
       scheduleDate: DateTime.parse(json['scheduleDate']),
       scheduleTime: json['scheduleTime'],
       status: json['status'],
-      driverId: driver != null ? driver['_id'] : null,
-      driverName: driver != null
+      driverId: driver != null
+          ? (driver is Map ? driver['_id'] : driver)
+          : null,
+      driverName: driver is Map
           ? "${driver['firstName']} ${driver['lastName']}"
           : null,
-      driverImage: driver != null ? driver['profilePictureUrl'] : null,
-      driverContact: driver != null ? driver['contactNumber'] : null,
-      vehicleInfo: driver != null ? driver['vehicleType'] : null,
+      driverImage: driver is Map ? driver['profilePictureUrl'] : null,
+      driverContact: driver is Map ? driver['contactNumber'] : null,
+      vehicleInfo: driver is Map ? driver['vehicleType'] : null,
     );
   }
 

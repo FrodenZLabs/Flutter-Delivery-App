@@ -8,7 +8,5 @@ abstract class ServiceRepository {
   Future<Either<Failure, ServiceResponse>> getRemoteServices(
     FilterServiceParams params,
   );
-  Future<Either<Failure, ServiceResponse>> getLocalServices(
-    FilterServiceParams params,
-  );
+  Future<Either<Failure, ServiceResponse>> getLocalServices();
 }

@@ -70,10 +70,14 @@ import 'package:flutter_delivery_app/domain/usecases/rating/check_rating_use_cas
     as _i351;
 import 'package:flutter_delivery_app/domain/usecases/schedule/book_schedule_use_case.dart'
     as _i616;
+import 'package:flutter_delivery_app/domain/usecases/schedule/get_local_schedule_use_case.dart'
+    as _i686;
 import 'package:flutter_delivery_app/domain/usecases/schedule/get_schedules_by_user_use_case.dart'
     as _i330;
 import 'package:flutter_delivery_app/domain/usecases/schedule/update_schedule.dart'
     as _i108;
+import 'package:flutter_delivery_app/domain/usecases/service/get_local_service_use_case.dart'
+    as _i963;
 import 'package:flutter_delivery_app/domain/usecases/service/get_service_use_case.dart'
     as _i327;
 import 'package:flutter_delivery_app/domain/usecases/user/get_local_user_use_case.dart'
@@ -166,6 +170,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i330.GetSchedulesByUserUseCase(gh<_i24.ScheduleRepository>()));
     gh.lazySingleton<_i108.UpdateSchedule>(
         () => _i108.UpdateSchedule(gh<_i24.ScheduleRepository>()));
+    gh.lazySingleton<_i686.GetLocalScheduleUseCase>(
+        () => _i686.GetLocalScheduleUseCase(gh<_i24.ScheduleRepository>()));
     gh.lazySingleton<_i14.UserRepository>(() => _i1026.UserRepositoryImpl(
           gh<_i1038.UserRemoteDataSource>(),
           gh<_i943.UserLocalDataSource>(),
@@ -199,6 +205,15 @@ extension GetItInjectableX on _i174.GetIt {
         ));
     gh.lazySingleton<_i327.GetServiceUseCase>(
         () => _i327.GetServiceUseCase(gh<_i591.ServiceRepository>()));
+    gh.lazySingleton<_i963.GetLocalServiceUseCase>(
+        () => _i963.GetLocalServiceUseCase(gh<_i591.ServiceRepository>()));
+    gh.factory<_i500.ScheduleBloc>(() => _i500.ScheduleBloc(
+          gh<_i616.BookScheduleUseCase>(),
+          gh<_i108.UpdateSchedule>(),
+          gh<_i330.GetSchedulesByUserUseCase>(),
+          gh<_i943.UserLocalDataSource>(),
+          gh<_i686.GetLocalScheduleUseCase>(),
+        ));
     gh.lazySingleton<_i904.AddDeliveryInfoUseCase>(
         () => _i904.AddDeliveryInfoUseCase(gh<_i993.DeliveryInfoRepository>()));
     gh.lazySingleton<_i293.DeleteLocalDeliveryInfoUseCase>(() =>
@@ -223,11 +238,13 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i721.LogoutUseCase(gh<_i14.UserRepository>()));
     gh.lazySingleton<_i728.RegisterUseCase>(
         () => _i728.RegisterUseCase(gh<_i14.UserRepository>()));
-    gh.factory<_i500.ScheduleBloc>(() => _i500.ScheduleBloc(
-          gh<_i616.BookScheduleUseCase>(),
-          gh<_i108.UpdateSchedule>(),
-          gh<_i330.GetSchedulesByUserUseCase>(),
-          gh<_i943.UserLocalDataSource>(),
+    gh.factory<_i850.PopularServicesBloc>(() => _i850.PopularServicesBloc(
+          gh<_i327.GetServiceUseCase>(),
+          gh<_i963.GetLocalServiceUseCase>(),
+        ));
+    gh.factory<_i367.ServiceBloc>(() => _i367.ServiceBloc(
+          gh<_i327.GetServiceUseCase>(),
+          gh<_i963.GetLocalServiceUseCase>(),
         ));
     gh.factory<_i346.DeliveryInfoFetchCubit>(() => _i346.DeliveryInfoFetchCubit(
           gh<_i723.GetRemoteDeliveryInfoUseCase>(),
@@ -235,10 +252,6 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i1016.GetSelectedDeliveryInfoUseCase>(),
           gh<_i293.DeleteLocalDeliveryInfoUseCase>(),
         ));
-    gh.factory<_i850.PopularServicesBloc>(
-        () => _i850.PopularServicesBloc(gh<_i327.GetServiceUseCase>()));
-    gh.factory<_i367.ServiceBloc>(
-        () => _i367.ServiceBloc(gh<_i327.GetServiceUseCase>()));
     gh.factory<_i448.DeliveryInfoActionCubit>(
         () => _i448.DeliveryInfoActionCubit(
               gh<_i904.AddDeliveryInfoUseCase>(),

@@ -22,31 +22,25 @@ class ServiceRepositoryImpl implements ServiceRepository {
   });
 
   @override
-  Future<Either<Failure, ServiceResponse>> getLocalServices(
-    FilterServiceParams params,
-  ) async {
-    try {
-      final localServices = await localDataSource.getCachedServices();
-      return Right(localServices);
-    } on ServerException {
-      return Left(CacheFailure());
-    }
-  }
-
-  @override
   Future<Either<Failure, ServiceResponse>> getRemoteServices(
     FilterServiceParams params,
   ) async {
-    if (!await networkInfo.isConnected) {
-      return Left(NetworkFailure());
-    }
-
     try {
       final remoteServices = await remoteDataSource.getServices(params);
       localDataSource.cacheServices(remoteServices);
       return Right(remoteServices);
     } on ServerException {
       return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, ServiceResponse>> getLocalServices() async {
+    try {
+      final localServices = await localDataSource.getCachedServices();
+      return Right(localServices);
+    } on ServerException {
+      return Left(CacheFailure());
     }
   }
 }

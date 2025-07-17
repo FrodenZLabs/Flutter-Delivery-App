@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_delivery_app/core/constants/strings.dart';
 import 'package:flutter_delivery_app/core/error/exceptions.dart';
 import 'package:flutter_delivery_app/data/models/schedule/schedule_model.dart';
@@ -21,6 +22,7 @@ class HttpScheduleRemoteDataSource implements ScheduleRemoteDataSource {
 
   @override
   Future<ScheduleModel> bookSchedule(ScheduleModel params, String token) async {
+    debugPrint("Params remote: ${params.scheduleDate} ${params.scheduleTime}");
     final response = await client.post(
       Uri.parse('$baseUrl/api/schedule/add'),
       headers: {
@@ -29,6 +31,8 @@ class HttpScheduleRemoteDataSource implements ScheduleRemoteDataSource {
       },
       body: scheduleModelToJson(params),
     );
+    debugPrint("Response body: ${response.body}");
+    debugPrint("Response status: ${response.statusCode}");
 
     if (response.statusCode == 201) {
       return scheduleModelFromRemoteJson(response.body);

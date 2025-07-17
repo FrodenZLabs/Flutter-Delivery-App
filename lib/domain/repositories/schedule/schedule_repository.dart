@@ -9,4 +9,5 @@ abstract class ScheduleRepository {
   Future<Either<Failure, List<Schedule>>> getSchedulesByUser(
     ScheduleModel params,
   );
+  Future<Either<Failure, List<Schedule>>> getLocalSchedulesByUser();
 }

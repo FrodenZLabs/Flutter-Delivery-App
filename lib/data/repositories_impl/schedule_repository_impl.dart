@@ -54,10 +54,6 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   Future<Either<Failure, List<Schedule>>> getSchedulesByUser(
     ScheduleModel params,
   ) async {
-    if (!await networkInfo.isConnected) {
-      return Left(NetworkFailure());
-    }
-
     final token = await userLocalDataSource.getToken();
     final userId = await userLocalDataSource.getUserId();
     if (token.isEmpty) {
@@ -74,6 +70,22 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       return Right(remoteServices);
     } on ServerException catch (e) {
       return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Schedule>>> getLocalSchedulesByUser() async {
+    try {
+      final userId = await userLocalDataSource.getUserId();
+
+      if (userId.isEmpty) {
+        return Left(AuthenticationFailure());
+      }
+
+      final localSchedules = await local.getSchedulesByUser(userId);
+      return Right(localSchedules);
+    } catch (e) {
+      return Left(CacheFailure());
     }
   }
 }

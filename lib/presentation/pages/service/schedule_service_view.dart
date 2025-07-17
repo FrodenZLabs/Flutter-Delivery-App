@@ -136,7 +136,9 @@ class _ScheduleServiceViewState extends State<ScheduleServiceView> {
       serviceId: widget.service.id,
       deliveryInfoId: deliveryState.selectedDeliveryInformation!.id,
       scheduleDate: selectedDate!,
-      scheduleTime: selectedTime!.format(context),
+      scheduleTime: DateFormat(
+        'hh:mm a',
+      ).format(DateTime(2025, 1, 1, selectedTime!.hour, selectedTime!.minute)),
       status: 'Pending',
       name: '',
       subname: '',
